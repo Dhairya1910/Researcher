@@ -1,0 +1,19 @@
+[project]
+name = "researcher"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "altair==4.2.2",
+    "langchain>=1.2.12",
+    "langchain-chroma>=1.1.0",
+    "langchain-community>=0.4.1",
+    "langchain-google-genai>=4.2.1",
+    "langchain-mistralai>=1.1.2",
+    "numpy>=2.4.3",
+    "pandas>=3.0.1",
+    "pypdf>=6.9.0",
+    "scikit-learn>=1.8.0",
+    "streamlit>=1.19.0",
+]
