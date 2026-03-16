@@ -1,0 +1,10 @@
+.venv
+Backend/__init__.py
+Backend/__pycache__
+Backend/PromptTemplates/__init__.py
+Backend/Services/__pycache__
+Backend/Services/__init__.py
+Backend/Services/.env
+Backend/vector_datastore
+Frontend/__init__.py
+__init__.py
