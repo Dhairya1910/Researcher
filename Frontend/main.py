@@ -113,11 +113,12 @@ if st.session_state.menu_open:
         st.subheader("Mode")
 
         st.session_state.mode = st.radio(
-            "",
+            "Select Agent mode",
             ["General","Research","Websearch"],
             horizontal=True
         )
         agent = Agent(agent_role=st.session_state.mode)
+
         st.markdown("---")
 
         st.subheader("Upload File")
@@ -140,7 +141,7 @@ if st.session_state.menu_open:
 
             elif "pdf" in mime:
                 st.session_state.file_type = "pdf"
-                text = agent.convert_to_base64(uploaded_pdf.getvalue())
+                text = agent.convert_and_store_to_vect_db(uploaded_pdf.getvalue())
 
 
             elif "word" in mime or "docx" in mime:
@@ -198,5 +199,5 @@ if prompt:
         "role":"Jarvis",
         "content":response,
     })
-
+    
     st.rerun()
