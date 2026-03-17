@@ -2,24 +2,24 @@ import streamlit as st
 import sys
 from pathlib import Path
 
+# Adjusting path for Backend imports
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from Backend.Services.Agent_Utils import Agent
 
-st.set_page_config(page_title="AI Chatbot", layout="wide")
+st.set_page_config(page_title="Research AI", layout="wide")
+
 
 # -------------------------
 # SESSION STATE INITIALIZE
 # -------------------------
 def init_state():
     defaults = {
-        "menu_open": False,
         "model": "mistral-medium-latest",
         "mode": "General",
         "uploaded_file": None,
         "file_type": "text",
-        "messages": []
+        "messages": [],
     }
-
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
@@ -27,177 +27,151 @@ def init_state():
 
 init_state()
 
-
 # -------------------------
-# STYLES
+# MINIMALIST UI STYLING
 # -------------------------
-st.markdown("""
+st.markdown(
+    """
 <style>
+    /* Global App Background */
+    .stApp {
+        background-color: #f8fafc;
+    }
 
-.menu-panel{
-    backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding:20px;
-    border:1px solid rgba(255,255,255,0.15);
-    margin-bottom:20px;
-}
-
-.chat-bubble-user{
-    background:#2b313e;
-    padding:12px 18px;
-    border-radius:12px;
-    margin:10px 0;
-    color:white;
-    animation:fadeIn 0.3s ease-in;
-}
-
-.chat-bubble-ai{
-    background:#1e2530;
-    padding:12px 18px;
-    border-radius:12px;
-    margin:10px 0;
-    color:white;
-    animation:fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn{
-    from {opacity:0; transform:translateY(10px);}
-    to {opacity:1; transform:translateY(0);}
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# -------------------------
-# HEADER
-# -------------------------
-st.title("AI Research Chatbot")
-agent = Agent()
-
-
-
-# -------------------------
-# HAMBURGER MENU
-# -------------------------
-col1, col2 = st.columns([1,20])
-
-with col1:
-    if st.button("☰"):
-        st.session_state.menu_open = not st.session_state.menu_open
-
-
-# -------------------------
-# MENU PANEL
-# -------------------------
-if st.session_state.menu_open:
-
-    with st.container():
-
-        st.markdown('<div class="menu-panel">', unsafe_allow_html=True)
-
-        st.subheader("Models")
-
-        st.session_state.model = st.radio(
-            "Select Model",
-            [
-                "mistral-medium-latest",
-                "mistral-small-latest",
-                "mistral-large-latest"
-            ],
-            horizontal=True
-        )
-
-        st.markdown("---")
-
-        st.subheader("Mode")
-
-        st.session_state.mode = st.radio(
-            "Select Agent mode",
-            ["General","Research","Websearch"],
-            horizontal=True
-        )
-        agent = Agent(agent_role=st.session_state.mode)
-        st.markdown("---")
-
-        st.subheader("Upload File")
-
-        uploaded = st.file_uploader(
-            "Upload PDF / DOC / Image",
-            type=["pdf","docx","png","jpg","jpeg"],
-            accept_multiple_files=False
-        )
-
-        if uploaded is not None:
-
-            st.session_state.uploaded_file = uploaded
-            uploaded_pdf = st.session_state.uploaded_file
-            mime = uploaded.type
-
-            if "image" in mime:
-                st.session_state.file_type = "image"
-                # encode the complete pdf into base64 embed and store it into vectordb
-
-            elif "pdf" in mime:
-                st.session_state.file_type = "pdf"
-                text = agent.convert_and_store_to_vect_db(uploaded_pdf.getvalue())
-
-
-            elif "word" in mime or "docx" in mime:
-                st.session_state.file_type = "doc"
-                # encode the complete pdf into base64 embed and store it into vectordb
-        else:
-            st.session_state.file_type = "text"
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-# -------------------------
-# DISPLAY CHAT
-# -------------------------
-for msg in st.session_state.messages:
-
-    if msg["role"] == "user":
-        st.markdown(
-            f'<div class="chat-bubble-user">{msg["content"]}</div>',
-            unsafe_allow_html=True
-        )
-
-    else:
-        st.markdown(
-            f'<div class="chat-bubble-ai">{msg["content"]}</div>',
-            unsafe_allow_html=True
-        )
-
-
-# -------------------------
-# CHAT INPUT
-# -------------------------
-prompt = st.chat_input("Ask something...")
-
-Model_name = st.session_state.model
-uploaded_pdf = st.session_state.uploaded_file 
-mode = st.session_state.mode
-file_type = st.session_state.file_type
-
-if file_type is None:
-    file_type = "text"
+    /* Sidebar - Crisp & Professional */
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0;
+    }
     
+    /* Input field text color fix */
+    .stSelectbox label, .stRadio label, .stFileUploader label {
+        color: #1e293b !important;
+        font-weight: 600 !important;
+    }
+
+    /* Chat Bubbles - High Contrast */
+    .chat-bubble-user {
+        background-color: #2563eb;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 18px 18px 2px 18px;
+        margin: 10px 0;
+        margin-left: auto;
+        width: fit-content;
+        max-width: 80%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .chat-bubble-ai {
+        background-color: #ffffff;
+        color: #1e293b;
+        padding: 12px 18px;
+        border-radius: 18px 18px 18px 2px;
+        margin: 10px 0;
+        border: 1px solid #e2e8f0;
+        width: fit-content;
+        max-width: 80%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .user-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-align: right;
+        margin-bottom: -5px;
+    }
+
+    .ai-label {
+        font-size: 0.75rem;
+        color: #2563eb;
+        font-weight: bold;
+        margin-bottom: -5px;
+    }
+
+    /* Title Styling */
+    .main-title {
+        text-align: center;
+        color: #0f172a;
+        font-weight: 800;
+        padding: 1rem 0;
+    }
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# -------------------------
+# SIDEBAR
+# -------------------------
+with st.sidebar:
+    st.markdown("<h2 style='color: #2563eb;'>Research AI</h2>", unsafe_allow_html=True)
+    st.divider()
+
+    st.session_state.model = st.selectbox(
+        "Model Select",
+        ["mistral-medium-latest", "mistral-small-latest", "mistral-large-latest"],
+    )
+
+    st.session_state.mode = st.radio("Agent Mode", ["General", "Research"])
+
+    st.divider()
+
+    uploaded = st.file_uploader(
+        "Upload context", type=["pdf", "docx", "png", "jpg", "jpeg"]
+    )
+
+    if uploaded:
+        st.session_state.uploaded_file = uploaded
+        st.info(f"Active: {uploaded.name}")
+
+# -------------------------
+# MAIN CHAT
+# -------------------------
+st.markdown(
+    f"<h1 class='main-title'>{st.session_state.mode} Assistant</h1>",
+    unsafe_allow_html=True,
+)
+
+chat_display = st.container()
+
+with chat_display:
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            st.markdown('<div class="user-label">You</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-bubble-user">{msg["content"]}</div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown('<div class="ai-label">Jarvis</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-bubble-ai">{msg["content"]}</div>',
+                unsafe_allow_html=True,
+            )
+
+# -------------------------
+# INPUT
+# -------------------------
+prompt = st.chat_input("How can I help you today?")
 
 if prompt:
-    st.session_state.messages.append({
-        "role":"user",
-        "content":prompt,
-    })
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
-    output = agent.Invoke_agent(prompt,file_type)
+    f_type = "text"
+    if st.session_state.uploaded_file:
+        if "pdf" in st.session_state.uploaded_file.type:
+            f_type = "pdf"
+        elif "image" in st.session_state.uploaded_file.type:
+            f_type = "image"
+        else:
+            f_type = "doc"
 
-    response = f"""Jarvis : {output}"""
+    agent = Agent(agent_role=st.session_state.mode)
+    with st.spinner("Writing response..."):
+        output = agent.Invoke_agent(prompt, f_type)
+        st.session_state.messages.append({"role": "Jarvis", "content": output})
 
-    st.session_state.messages.append({
-        "role":"Jarvis",
-        "content":response,
-    })
-    
     st.rerun()
