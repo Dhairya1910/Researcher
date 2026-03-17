@@ -2,12 +2,18 @@ from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
 from langchain.agents import create_agent 
 from langchain.messages import HumanMessage,SystemMessage
 from langchain.agents.middleware import ModelRequest,ModelResponse,AgentMiddleware
-from typing import Callable,TypedDict
+from langchain_core.tools import tool, BaseTool, BaseToolkit
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.utilities import jina_search
 from langchain_chroma import Chroma
+
+from typing import Callable,TypedDict
+# from pydantic import Field
 from pypdf import PdfReader
 import io
+import json
 from dotenv import load_dotenv
 
 
@@ -32,7 +38,10 @@ class Agent:
         self.StringParser = StrOutputParser()
         self.splitter = RecursiveCharacterTextSplitter(chunk_size=4000,chunk_overlap=200)
         self.model_name = model_name
-        self.agent_role = "Intelligent research" if agent_role == "Research" else "helpful" 
+        self.agent_role = "Intelligent research" if agent_role == "Research" else "helpful"  "Websearcher" if agent_role == "Websearch" else "helpful"
+
+        self.toolkit = ResearchToolkit()
+
 
         # verify and load API keys.
         if load_dotenv():
@@ -45,6 +54,7 @@ class Agent:
             model = self.model_name,
             temperature = temperature,
         )
+
 
         # Create embedding model 
         self.embedding_model = MistralAIEmbeddings(
@@ -64,12 +74,13 @@ class Agent:
         # Create agent
         self.agent = create_agent(
             model = self.model,
+            tools = self.toolkit.get_tools(),
             system_prompt= """
-            You are a very {agent_role}, you main goal is to assist the user as much you can,
+            You are a {agent_role}, you main goal is to assist the user as much you can,
             use tools provided to you for assisting the user.
             """,
             context_schema =  metadata,
-            middleware= [Add_context_middleware]
+            middleware= [Add_context_middleware],
         )
         
 
@@ -93,32 +104,28 @@ class Agent:
         """
         Based on input_type processes the user request and invokes the agent.
         """
-
-        if input_type == "text":
-            response = self.agent.invoke(
-                    {
-                        "messages" : [HumanMessage(content = input_text)]
-                    },
-                    context= metadata(user="user",agent_role=self.agent_role,input_type=input_type),
-                ) 
-
-        elif input_type == "pdf":
-            response  = self.agent.invoke(
+        
+        response = self.agent.invoke(
                 {
                     "messages" : [HumanMessage(content = input_text)]
                 },
                 context= metadata(user="user",agent_role=self.agent_role,input_type=input_type),
-            ) 
+            )  
+
         output = response["messages"][-1].content
         output = self.StringParser.invoke(output)
         return output
 
 
     """
-    ####################################### MIDDLEWARE and TOOLS Section #######################################
+    ####################################### MIDDLEWARE Section #######################################
     """
 
 class ResearcherMiddleware(AgentMiddleware):
+
+    """
+    Class contains custom and prebuilt middleware that modifies agent at runtime.
+    """
 
     def __init__(self,vector_store):
         self.vector_store = vector_store 
@@ -132,6 +139,7 @@ class ResearcherMiddleware(AgentMiddleware):
         input_type = request.runtime.context['input_type']
 
         if input_type in ["pdf","docs"]: 
+            print("using a pdf to answer.")
             retriever = self.vector_store.as_retriever(
                 search_type="mmr",
                 search_kwargs={"k": 5}
@@ -140,27 +148,36 @@ class ResearcherMiddleware(AgentMiddleware):
             context_text = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
             system_prompt = f"""
-                You are a {agent_role} assistant.
+            You are a {agent_role} assistant with access to tools.
 
-                Context from uploaded document:
-                {context_text}
-                user query : 
-                {user_message}
+            === UPLOADED DOCUMENT CONTEXT ===
+            {context_text}
+            =================================
 
-                Rules:
-                1. If the query is unrelated to the document you must say:
-                "Provided document does not contain information about this query."
-                2. Provide a very detailed explanation.
-                3. Answer in point-by-point format.
-                """
+            User Query: {user_message}
 
+            === STRICT RESPONSE PROTOCOL ===
+
+            STEP 1 — RELEVANCE CHECK (MANDATORY):
+            - Carefully check whether the user query can be answered using the DOCUMENT CONTEXT above.
+            - If YES → answer directly from the document context.
+            - If NO  → you MUST first say exactly:
+            "The provided document does not contain information about this query."
+            Then IMMEDIATELY use the [General Knowledge Tool] to answer.
+
+            STEP 2 — ANSWERING:
+            - Provide a very detailed, point-by-point explanation.
+            - Include examples where helpful.
+            - Never skip STEP 1 — it is required even if you use a tool.
+            IMPORTANT: Do NOT silently use a tool without first completing STEP 1.
+            """
             request.messages.insert(
                 0,
                 SystemMessage(content=system_prompt)
             )
         else : 
             system_prompt = f"""
-                You are a {agent_role} assistant.
+                You are a {agent_role} assistant and you have access to certain tools use them as per you require..
                 user query : 
                 {user_message}
                 Rules:
@@ -176,4 +193,86 @@ class ResearcherMiddleware(AgentMiddleware):
         return handler(request)
 
 
+
+"""
+####################################### TOOLs Section #######################################
+"""
+
+class ResearchToolkit(BaseToolkit):
+    """
+    Tool kit containing all the necessary tools for agent to function.
+    """
+    class Config: 
+        arbitrary_types_allowed = True # allows access to objects that are not known to pydantic.
+
+    def get_tools(self) -> list[BaseTool]:
+
+        # creating a citation model for generating its citations.
+        citation_summarization_model = ChatMistralAI(
+            model = "mistral-small-latest",
+            temperature = 0.8
+        ) 
+
+        citation_prompt = PromptTemplate(
+            template = """
+            Content : 
+            {text_content}
+            Citation_content : 
+            {Description_links}
+
+            Your an expert content writer , researcher for the given Content you have to return a detailed summary. 
+
+            RULES YOU MUST FOLLOW : 
+            1. If the Links are Citation_content then create citations accordingly.
+            2. You must use the Citation_content and Content to generate a more detailed summary.
+            """,
+        ) 
+
+        output_parser = StrOutputParser()
         
+        # used for searching 
+        Search = jina_search.JinaSearchAPIWrapper()
+
+        @tool 
+        def general_knowledge_mode(query:str) -> str:
+            """
+            Answer general knowledge questions not related to uploaded documents.
+            """
+            print("General knowledge tool accessed.")
+            return f"Answering from General knowledge {query}"
+
+        @tool
+        def Search_mode(query:str) -> str:
+            """
+            Use this tool to gain latest news and insights about Document or user query.
+            """
+            print("Search tool accessed.")
+            raw_data = Search.run(query) 
+            results = json.loads(raw_data)
+
+            Text_content = "\n\n".join(
+                    f"{item.get('snippet', '')}"
+                    for item in results
+                    if item.get('snippet')
+                )
+            
+            Description_links = "\n\n".join(
+                f"{item.get('content'),''}"
+                for item in results
+                if item.get('content')
+                )
+            
+            limit = min(len(Description_links),200000) -1 
+
+            chain = citation_prompt | citation_summarization_model | output_parser
+
+            output = chain.invoke(
+                {
+                    "text_content" : Text_content,
+                    "Description_links" : Description_links[limit]
+                }
+            ) 
+
+            return output 
+
+        return [general_knowledge_mode,Search_mode]
