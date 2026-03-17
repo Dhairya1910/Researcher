@@ -74,6 +74,7 @@ st.markdown("""
 # HEADER
 # -------------------------
 st.title("AI Research Chatbot")
+agent = Agent()
 
 
 
@@ -118,7 +119,6 @@ if st.session_state.menu_open:
             horizontal=True
         )
         agent = Agent(agent_role=st.session_state.mode)
-
         st.markdown("---")
 
         st.subheader("Upload File")
