@@ -131,4 +131,4 @@ class ResearchToolkit(BaseToolkit):
 
             return output
 
-        return [general_knowledge_mode, Search_mode]
+        return [general_knowledge_mode]
