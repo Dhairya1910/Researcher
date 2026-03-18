@@ -5,6 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
+from chromadb.config import Settings
 import sys
 from pathlib import Path
 
@@ -64,6 +65,7 @@ class Agent:
             collection_name="User_data",
             embedding_function=self.embedding_model,
             persist_directory=r"d:\Researcher\Backend\vector_datastore",
+            client_settings=Settings(allow_reset=True),
         )
 
         # add_context middle ware
@@ -85,8 +87,13 @@ class Agent:
         """
         Convert byte data into text from PDF and stores it to vector database.
         """
-
         reader = PdfReader(io.BytesIO(bytes_data))
+        self.vector_store = Chroma(
+            collection_name="User_data",
+            embedding_function=self.embedding_model,
+            persist_directory=r"d:\Researcher\Backend\vector_datastore",
+            client_settings=Settings(allow_reset=True),
+        )
 
         text = ""
         for page in reader.pages:
@@ -94,7 +101,8 @@ class Agent:
 
         chunks = self.splitter.split_text(text)
         self.vector_store.add_texts(chunks)
-        return text
+
+        return True
 
     def Invoke_agent(self, input_text, input_type="text"):
         """
@@ -111,3 +119,15 @@ class Agent:
         output = response["messages"][-1].content
         output = self.StringParser.invoke(output)
         return output
+
+    def clear_vectorstore(self):
+        if hasattr(self, "vector_store") and self.vector_store is not None:
+            try:
+                all_ids = self.vector_store.get(include=[])["ids"]
+                self.vector_store.delete(ids=all_ids)
+                # self.vector_store.reset_collection()
+                print("Whole vector store reset.")
+                # self.vector_store._client.create_collection("User_data")
+            except Exception as e:
+                self.vector_store.delete_collection()
+                print(f"Collection cleared: {e}")
