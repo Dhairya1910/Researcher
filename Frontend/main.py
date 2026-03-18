@@ -16,7 +16,10 @@ def init_state():
     defaults = {
         "model": "mistral-medium-latest",
         "mode": "General",
+        "current_agent_mode": "General",
+        "Agent": None,
         "uploaded_file": None,
+        "file_stored": False,
         "file_type": "text",
         "messages": [],
     }
@@ -122,6 +125,13 @@ with st.sidebar:
     uploaded = st.file_uploader(
         "Upload context", type=["pdf", "docx", "png", "jpg", "jpeg"]
     )
+    if uploaded is None and st.session_state.file_stored:
+        if st.session_state.Agent:
+            st.session_state.Agent.clear_vectorstore()
+            st.session_state.file_stored = False
+            st.session_state.file_type = "text"
+            st.session_state.uploaded_file = None
+            st.toast("Cleared file context.")
 
     if uploaded:
         st.session_state.uploaded_file = uploaded
@@ -158,20 +168,40 @@ with chat_display:
 prompt = st.chat_input("How can I help you today?")
 
 if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    if (
+        not st.session_state.Agent
+        or st.session_state.mode != st.session_state.current_agent_mode
+    ):  # added new mechanism if the agent is already created no need to re-create agent in every prompt.
+        with st.spinner(f"Creating a new agent with {st.session_state.mode} mode..."):
+            agent = Agent(agent_role=st.session_state.mode)
+            st.session_state.Agent = agent
+            print(f"New agent created with {st.session_state.mode}.")
+            st.session_state.current_agent_mode = st.session_state.mode
+            st.session_state.Agent_exist = True
 
+    st.session_state.messages.append({"role": "user", "content": prompt})
     f_type = "text"
-    if st.session_state.uploaded_file:
+
+    if (
+        st.session_state.uploaded_file
+    ):  # added new mechanism if file is already stored no need to re-compile it.
         if "pdf" in st.session_state.uploaded_file.type:
             f_type = "pdf"
+            if not st.session_state.file_stored:
+                pdf_byte_data = st.session_state.uploaded_file
+                with st.spinner(f"Processing your {f_type}..."):
+                    pdf_flag = st.session_state.Agent.convert_and_store_to_vect_db(
+                        pdf_byte_data.getvalue()
+                    )
+                    st.session_state.file_stored = pdf_flag
+
         elif "image" in st.session_state.uploaded_file.type:
             f_type = "image"
         else:
             f_type = "doc"
 
-    agent = Agent(agent_role=st.session_state.mode)
     with st.spinner("Writing response..."):
-        output = agent.Invoke_agent(prompt, f_type)
+        output = st.session_state.Agent.Invoke_agent(prompt, f_type)
         st.session_state.messages.append({"role": "Jarvis", "content": output})
 
     st.rerun()
