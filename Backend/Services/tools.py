@@ -1,8 +1,6 @@
 from langchain_core.tools import tool, BaseTool, BaseToolkit
 from langchain_community.utilities import jina_search
-from langchain_core.prompts import PromptTemplate
-from langchain_mistralai import ChatMistralAI
-from langchain_core.output_parsers import StrOutputParser
+from langchain_community.tools import DuckDuckGoSearchRun
 import json
 
 
@@ -18,89 +16,34 @@ class ResearchToolkit(BaseToolkit):
 
     def get_tools(self) -> list[BaseTool]:
 
-        # creating a citation model for generating its citations.
-        citation_summarization_model = ChatMistralAI(
-            model="mistral-small-latest", temperature=0.8
-        )
-
-        citation_prompt = PromptTemplate(
-            template="""
-        You are an expert researcher and technical content writer.
-
-        Your task is to generate a **clear, detailed, and well-structured summary** of the provided content, enriched with **accurate IEEE-style citations**.
-
-        ==================== INPUT ====================
-
-        Content:
-        {text_content}
-
-        Citation Sources:
-        {Description_links}
-
-        Relevant Sources links : 
-        {Source_links}
-
-        ==================== INSTRUCTIONS ====================
-
-        1. Carefully analyze both:
-        - The main Content
-        - The Citation Sources (links / references)
-        - Relevant Sources links (contains links)
-
-        2. Generate a **comprehensive, point-wise summary** that:
-        - Explains key ideas clearly
-        - Adds useful context where relevant
-        - Avoids repetition or fluff
-
-        ==================== CITATION RULES ====================
-
-        - Every factual statement MUST include a citation.
-        - Use IEEE citation style.
-
-        INLINE FORMAT:
-        - Place citation numbers like [1], [2], [3] immediately after the sentence.
-        - Number citations in order of first appearance.
-
-        REFERENCE FORMAT:
-        [N] Author(s), "Title," Source/Journal, vol. X, no. X, pp. XX–XX, Year.
-        - Convert links into proper reference entries.
-        - Ensure each reference includes a **clickable hyperlink**.
-
-        ==================== OUTPUT FORMAT ====================
-
-        Summary:
-        --------
-        <Structured, point-wise detailed summary with inline citations>
-
-        References:
-        -----------
-        [1] ...
-        [2] ...
-        [3] ...
-        """
-        )
-
-        output_parser = StrOutputParser()
-
-        # used for searching
         Search = jina_search.JinaSearchAPIWrapper()
+        duck_search = DuckDuckGoSearchRun()
 
         @tool
-        def general_knowledge_mode(query: str) -> str:
+        def general_search_mode(query: str) -> str:
             # Remark : this tool is not required. get a better prompt
             """
-            Answer general knowledge questions not related to uploaded documents.
+            Acts as a fallback retrieval tool. Use this ONLY when information
+            cannot be found within the provided documents or internal context.
+            It is ideal for verifying external facts, dates, or general knowledge
+            that is missing from the user's uploaded files.
             """
-            print("General knowledge tool accessed.")
-            return f"Answering from General knowledge {query}"
+            print("General-search-tool accessed.")
+            results = duck_search.invoke(query)
+            return results
 
         @tool
-        def Search_mode(query: str) -> str:
+        def Advance_Search_mode(query: str) -> dict:
             # Remark : no need for llm call think alternative, just searching and getting the output and sending it back to agent.
             """
-            Use this tool to gain latest news and insights about Document or user query.
+            Use this for high-intensity research or when the user specifically
+            asks for 'latest news', 'deep insights', or 'source links' related
+            to a document topic. Use this if the documents provide a base
+            concept but lack the most current real-world data or external
+            references (URLs).
             """
-            print("Search tool accessed.")
+
+            print("Advance-search-tool accessed.")
 
             raw_data = Search.run(query)
             results = json.loads(raw_data)
@@ -117,18 +60,12 @@ class ResearchToolkit(BaseToolkit):
                 f"{item.get('link','')}" for item in results if item.get("link")
             )
 
-            limit = min(len(Description), 200000) - 1
+            limit = min(len(Description), 10000)
+            search_summary = {
+                "content": Text_content,
+                "Description": Description[:limit],
+                "Source_links": Links,
+            }
+            return search_summary
 
-            chain = citation_prompt | citation_summarization_model | output_parser
-
-            output = chain.invoke(
-                {
-                    "text_content": Text_content,
-                    "Description_links": Description[limit],
-                    "Source_links": Links,
-                }
-            )
-
-            return output
-
-        return [general_knowledge_mode]
+        return [general_search_mode, Advance_Search_mode]
