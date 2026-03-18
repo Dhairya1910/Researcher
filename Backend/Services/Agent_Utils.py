@@ -4,6 +4,7 @@ from langchain.messages import HumanMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from langgraph.checkpoint.memory import InMemorySaver
 
 from chromadb.config import Settings
 import sys
@@ -80,6 +81,7 @@ class Agent:
             use tools provided to you for assisting the user.
             """,
             context_schema=metadata,
+            checkpointer=InMemorySaver(),
             middleware=[Add_context_middleware],
         )
 
@@ -114,6 +116,7 @@ class Agent:
             context=metadata(
                 user="user", agent_role=self.agent_role, input_type=input_type
             ),
+            config={"configurable": {"thread_id": "1"}},
         )
 
         output = response["messages"][-1].content
