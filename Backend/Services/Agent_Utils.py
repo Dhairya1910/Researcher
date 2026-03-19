@@ -42,7 +42,6 @@ class Agent:
         )
 
         self.agent_role = agent_role
-        self.toolkit = ResearchToolkit()
 
         # verify and load API keys.
         if load_dotenv():
@@ -74,8 +73,11 @@ class Agent:
             client_settings=Settings(allow_reset=True),
         )
 
+        # Initiating toolkit
+        self.toolkit = ResearchToolkit(vector_store=self.vector_store)
+
         # add_context middle ware
-        Add_context_middleware = ResearcherMiddleware(vector_store=self.vector_store)
+        Add_context_middleware = ResearcherMiddleware()
 
         # Create agent
         self.agent = create_agent(
