@@ -5,6 +5,7 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from exa_py import Exa
 from dotenv import load_dotenv
 import os
+from typing import Any, List
 
 
 class ResearchToolkit(BaseToolkit):
@@ -12,10 +13,15 @@ class ResearchToolkit(BaseToolkit):
     Tool kit containing all the necessary tools for agent to function.
     """
 
+    vector_store: Any
+
     class Config:
         arbitrary_types_allowed = (
             True  # allows access to objects that are not known to pydantic.
         )
+
+    def __init__(self, vector_store: Any, **kwargs):
+        super().__init__(vector_store=vector_store, **kwargs)
 
     def get_tools(self) -> list[BaseTool]:
         load_dotenv()
@@ -24,8 +30,42 @@ class ResearchToolkit(BaseToolkit):
         duck_search = DuckDuckGoSearchRun()
 
         @tool
+        def document_retrieval_tool(queries: List[str]) -> str:
+            """
+            Retrieves specific, relevant content from the provided document(s) based on a semantic search.
+            You can pass multiple distinct search queries in a single tool call to batch process them.
+
+            Args:
+                queries (List[str]): A list of up to 3 optimized search strings or keyword clusters.
+                                     CRITICAL: Do NOT call this tool multiple times. If you have multiple
+                                     distinct concepts to look up (e.g., general NN concepts vs CNN specifics),
+                                     put them all in this single list as separate strings.
+
+            Returns:
+                str: A single concatenated string containing the raw text of the relevant document chunks,
+                     separated by double newlines. If retrieval fails, it returns an error message.
+            """
+            print(f"Document-retrieval-tool accessed with queries: {queries}")
+            retriever = self.vector_store.as_retriever(
+                search_type="similarity", search_kwargs={"k": 5}
+            )
+            all_retrieved_docs = []
+            seen_content = set()
+            for query in queries:
+                docs = retriever.invoke(query)
+                for doc in docs:
+                    if doc.page_content not in seen_content:
+                        seen_content.add(doc.page_content)
+                        all_retrieved_docs.append(doc)
+
+            if not all_retrieved_docs:
+                return "System Note: No relevant information found in the document for these queries."
+
+            context_text = "\n\n".join(doc.page_content for doc in all_retrieved_docs)
+            return context_text
+
+        @tool
         def general_search_mode(query: str) -> str:
-            # Remark : this tool is not required. get a better prompt
             """
             Acts as a fallback retrieval tool. Use this ONLY when information
             cannot be found within the provided documents or internal context.
@@ -71,4 +111,4 @@ class ResearchToolkit(BaseToolkit):
 
             return cleaned_data
 
-        return [general_search_mode, Advance_Search_mode]
+        return [general_search_mode, Advance_Search_mode, document_retrieval_tool]
