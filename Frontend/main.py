@@ -115,10 +115,25 @@ with st.sidebar:
 
     st.session_state.model = st.selectbox(
         "Model Select",
-        ["mistral-medium-latest", "mistral-small-latest", "mistral-large-latest"],
+        [
+            "mistral-medium-latest",
+            "mistral-small-latest",
+            "mistral-large-latest",
+            "deepseek-ai/deepseek-v3.2",
+        ],
     )
+    if (
+        st.session_state.model != "deepseek-ai/deepseek-v3.2"
+        and st.session_state.mode == "Research"
+    ):
+
+        st.toast("As you are Research mode cannot change the model.")
+        st.session_state.model = "deepseek-ai/deepseek-v3.2"
 
     st.session_state.mode = st.radio("Agent Mode", ["General", "Research"])
+    if st.session_state.mode == "Research":
+        st.session_state.model = "deepseek-ai/deepseek-v3.2"
+        st.toast("Agent mode switched to Research")
 
     st.divider()
 
@@ -173,9 +188,13 @@ if prompt:
         or st.session_state.mode != st.session_state.current_agent_mode
     ):  # added new mechanism if the agent is already created no need to re-create agent in every prompt.
         with st.spinner(f"Creating a new agent with {st.session_state.mode} mode..."):
-            agent = Agent(agent_role=st.session_state.mode)
+            agent = Agent(
+                model_name=st.session_state.model, agent_role=st.session_state.mode
+            )
             st.session_state.Agent = agent
-            print(f"New agent created with {st.session_state.mode}.")
+            print(
+                f"New agent created with {st.session_state.mode} using {st.session_state.model}."
+            )
             st.session_state.current_agent_mode = st.session_state.mode
             st.session_state.Agent_exist = True
 
@@ -200,7 +219,11 @@ if prompt:
         else:
             f_type = "doc"
 
-    with st.spinner("Writing response..."):
+    if st.session_state.mode == "Research":
+        text = f"Researching on {prompt} may take a while"
+    else:
+        text = "Writing response..."
+    with st.spinner(text):
         output = st.session_state.Agent.Invoke_agent(prompt, f_type)
         st.session_state.messages.append({"role": "Jarvis", "content": output})
 
