@@ -122,18 +122,20 @@ with st.sidebar:
             "deepseek-ai/deepseek-v3.2",
         ],
     )
+
     if (
         st.session_state.model != "deepseek-ai/deepseek-v3.2"
         and st.session_state.mode == "Research"
     ):
 
-        st.toast("As you are Research mode cannot change the model.")
+        st.toast("As you are in Research mode cannot change the model.")
         st.session_state.model = "deepseek-ai/deepseek-v3.2"
 
     st.session_state.mode = st.radio("Agent Mode", ["General", "Research"])
+
     if st.session_state.mode == "Research":
         st.session_state.model = "deepseek-ai/deepseek-v3.2"
-        st.toast("Agent mode switched to Research")
+        st.toast("Agent mode switched to Research, by default uses deepseek-v3.2")
 
     st.divider()
 
