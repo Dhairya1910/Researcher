@@ -1,4 +1,5 @@
 from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -34,16 +35,13 @@ class Agent:
     def __init__(
         self, model_name="mistral-small-latest", temperature=0.5, agent_role="general"
     ):
-
+        self.model_name = model_name
         self.StringParser = StrOutputParser()
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=4000, chunk_overlap=200
         )
-        self.model_name = model_name
-        self.agent_role = (
-            "Intelligent research" if agent_role == "Research" else "helpful"
-        )
 
+        self.agent_role = agent_role
         self.toolkit = ResearchToolkit()
 
         # verify and load API keys.
@@ -53,11 +51,18 @@ class Agent:
             print("Api Key not verified.")
 
         # create Model
-        self.model = ChatMistralAI(
-            model=self.model_name,
-            temperature=temperature,
-        )
-
+        if agent_role == "Research":
+            thinking_model = ChatNVIDIA(
+                model=self.model_name,
+                max_completion_tokens=100000,
+                temperature=temperature,
+            )
+            self.model = thinking_model.with_thinking_mode(enabled=True)
+        else:
+            self.model = ChatMistralAI(
+                model=self.model_name,
+                temperature=temperature,
+            )
         # Create embedding model
         self.embedding_model = MistralAIEmbeddings(model="mistral-embed")
 
