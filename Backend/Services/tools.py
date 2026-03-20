@@ -99,7 +99,7 @@ class ResearchToolkit(BaseToolkit):
                 query,
                 type="auto",
                 num_results=5,
-                contents={"highlights": {"max_characters": 1500}},
+                contents={"highlights": {"max_characters": 1000}},
             )
             cleaned_data = []
 

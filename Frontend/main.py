@@ -1,5 +1,7 @@
 import streamlit as st
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 
 # Adjusting path for Backend imports
@@ -31,76 +33,66 @@ def init_state():
 init_state()
 
 # -------------------------
-# MINIMALIST UI STYLING
+# UI STYLING
 # -------------------------
 st.markdown(
     """
 <style>
-    /* Global App Background */
-    .stApp {
-        background-color: #f8fafc;
-    }
+.stApp { background-color: #f8fafc; }
 
-    /* Sidebar - Crisp & Professional */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e2e8f0;
-    }
-    
-    /* Input field text color fix */
-    .stSelectbox label, .stRadio label, .stFileUploader label {
-        color: #1e293b !important;
-        font-weight: 600 !important;
-    }
+section[data-testid="stSidebar"] {
+    background-color: #ffffff !important;
+    border-right: 1px solid #e2e8f0;
+}
 
-    /* Chat Bubbles - High Contrast */
-    .chat-bubble-user {
-        background-color: #2563eb;
-        color: white;
-        padding: 12px 18px;
-        border-radius: 18px 18px 2px 18px;
-        margin: 10px 0;
-        margin-left: auto;
-        width: fit-content;
-        max-width: 80%;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+.chat-bubble-user {
+    background-color: #2563eb;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 18px 18px 2px 18px;
+    margin: 10px 0;
+    margin-left: auto;
+    max-width: 80%;
+    width: fit-content;            
+    word-wrap: break-word;          
+    white-space: pre-wrap; 
+}
 
-    .chat-bubble-ai {
-        background-color: #ffffff;
-        color: #1e293b;
-        padding: 12px 18px;
-        border-radius: 18px 18px 18px 2px;
-        margin: 10px 0;
-        border: 1px solid #e2e8f0;
-        width: fit-content;
-        max-width: 80%;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
 
-    .user-label {
-        font-size: 0.75rem;
-        color: #64748b;
-        text-align: right;
-        margin-bottom: -5px;
-    }
+.chat-bubble-ai, .chat-bubble-user {
+    animation: fadeIn 0.2s ease-in;
+}
 
-    .ai-label {
-        font-size: 0.75rem;
-        color: #2563eb;
-        font-weight: bold;
-        margin-bottom: -5px;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-    /* Title Styling */
-    .main-title {
-        text-align: center;
-        color: #0f172a;
-        font-weight: 800;
-        padding: 1rem 0;
-    }
+.user-label, .ai-label {
+    font-size: 0.75rem;
+    margin-bottom: -5px;
+}
+
+.user-label {
+    color: #64748b;
+    text-align: right;
+}
+
+.ai-label {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.timestamp {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.main-title {
+    text-align: center;
+    font-weight: 800;
+}
 </style>
 """,
     unsafe_allow_html=True,
@@ -110,7 +102,7 @@ st.markdown(
 # SIDEBAR
 # -------------------------
 with st.sidebar:
-    st.markdown("<h2 style='color: #2563eb;'>Research AI</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#2563eb;'>Research AI</h2>", unsafe_allow_html=True)
     st.divider()
 
     st.session_state.model = st.selectbox(
@@ -119,36 +111,26 @@ with st.sidebar:
             "mistral-medium-latest",
             "mistral-small-latest",
             "mistral-large-latest",
-            "deepseek-ai/deepseek-v3.2",
+            "magistral-medium-latest",
+            "magistral-small-latest",
         ],
     )
-
-    if (
-        st.session_state.model != "deepseek-ai/deepseek-v3.2"
-        and st.session_state.mode == "Research"
-    ):
-
-        st.toast("As you are in Research mode cannot change the model.")
-        st.session_state.model = "deepseek-ai/deepseek-v3.2"
 
     st.session_state.mode = st.radio("Agent Mode", ["General", "Research"])
 
     if st.session_state.mode == "Research":
-        st.session_state.model = "deepseek-ai/deepseek-v3.2"
-        st.toast("Agent mode switched to Research, by default uses deepseek-v3.2")
+        st.session_state.model = "magistral-medium-latest"
 
     st.divider()
 
     uploaded = st.file_uploader(
         "Upload context", type=["pdf", "docx", "png", "jpg", "jpeg"]
     )
+
     if uploaded is None and st.session_state.file_stored:
         if st.session_state.Agent:
             st.session_state.Agent.clear_vectorstore()
             st.session_state.file_stored = False
-            st.session_state.file_type = "text"
-            st.session_state.uploaded_file = None
-            st.toast("Cleared file context.")
 
     if uploaded:
         st.session_state.uploaded_file = uploaded
@@ -162,22 +144,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-chat_display = st.container()
+# Display history
+for msg in st.session_state.messages:
+    label = "You" if msg["role"] == "user" else "Jarvis"
+    label_class = "user-label" if msg["role"] == "user" else "ai-label"
+    bubble_class = "chat-bubble-user" if msg["role"] == "user" else "chat-bubble-ai"
 
-with chat_display:
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown('<div class="user-label">You</div>', unsafe_allow_html=True)
-            st.markdown(
-                f'<div class="chat-bubble-user">{msg["content"]}</div>',
-                unsafe_allow_html=True,
-            )
-        else:
-            st.markdown('<div class="ai-label">Jarvis</div>', unsafe_allow_html=True)
-            st.markdown(
-                f'<div class="chat-bubble-ai">{msg["content"]}</div>',
-                unsafe_allow_html=True,
-            )
+    st.markdown(f'<div class="{label_class}">{label}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="{bubble_class}">{msg["content"]}</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f'<div class="timestamp">{msg.get("time","")}</div>',
+        unsafe_allow_html=True,
+    )
 
 # -------------------------
 # INPUT
@@ -185,48 +166,87 @@ with chat_display:
 prompt = st.chat_input("How can I help you today?")
 
 if prompt:
+    start_time = time.time()
+    timestamp = datetime.now().strftime("%H:%M")
+
+    # Create agent if needed
     if (
         not st.session_state.Agent
         or st.session_state.mode != st.session_state.current_agent_mode
-    ):  # added new mechanism if the agent is already created no need to re-create agent in every prompt.
-        with st.spinner(f"Creating a new agent with {st.session_state.mode} mode..."):
-            agent = Agent(
-                model_name=st.session_state.model, agent_role=st.session_state.mode
-            )
-            st.session_state.Agent = agent
-            print(
-                f"New agent created with {st.session_state.mode} using {st.session_state.model}."
+    ):
+        with st.spinner("Initializing agent..."):
+            st.session_state.Agent = Agent(
+                model_name=st.session_state.model,
+                agent_role=st.session_state.mode,
             )
             st.session_state.current_agent_mode = st.session_state.mode
-            st.session_state.Agent_exist = True
 
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Store user message
+    st.session_state.messages.append(
+        {"role": "user", "content": prompt, "time": timestamp}
+    )
+
+    st.markdown('<div class="user-label">You</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="chat-bubble-user">{prompt}</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(f'<div class="timestamp">{timestamp}</div>', unsafe_allow_html=True)
+
+    # File handling
     f_type = "text"
-
-    if (
-        st.session_state.uploaded_file
-    ):  # added new mechanism if file is already stored no need to re-compile it.
+    if st.session_state.uploaded_file:
         if "pdf" in st.session_state.uploaded_file.type:
             f_type = "pdf"
             if not st.session_state.file_stored:
-                pdf_byte_data = st.session_state.uploaded_file
-                with st.spinner(f"Processing your {f_type}..."):
-                    pdf_flag = st.session_state.Agent.convert_and_store_to_vect_db(
-                        pdf_byte_data.getvalue()
+                with st.spinner("Processing PDF..."):
+                    st.session_state.Agent.convert_and_store_to_vect_db(
+                        st.session_state.uploaded_file.getvalue()
                     )
-                    st.session_state.file_stored = pdf_flag
-
+                    st.session_state.file_stored = True
         elif "image" in st.session_state.uploaded_file.type:
             f_type = "image"
-        else:
-            f_type = "doc"
 
-    if st.session_state.mode == "Research":
-        text = f"Researching on {prompt} may take a while"
-    else:
-        text = "Writing response..."
-    with st.spinner(text):
-        output = st.session_state.Agent.Invoke_agent(prompt, f_type)
-        st.session_state.messages.append({"role": "Jarvis", "content": output})
+    # Streaming response
+    stream_gen = st.session_state.Agent.Invoke_agent(prompt, f_type)
 
-    st.rerun()
+    output = ""
+    bubble = st.empty()
+
+    # Thinking indicator
+    bubble.markdown(
+        '<div class="chat-bubble-ai">Thinking...</div>',
+        unsafe_allow_html=True,
+    )
+
+    for chunk in stream_gen:
+        output += chunk
+
+        bubble.markdown(
+            f'<div class="chat-bubble-ai">{output}▌</div>',
+            unsafe_allow_html=True,
+        )
+
+    bubble.markdown(
+        f'<div class="chat-bubble-ai">{output}</div>',
+        unsafe_allow_html=True,
+    )
+
+    end_time = time.time()
+    exec_time = round(end_time - start_time, 2)
+    ai_timestamp = datetime.now().strftime("%H:%M")
+
+    st.markdown(
+        f'<div class="timestamp">{ai_timestamp} • {exec_time}s</div>',
+        unsafe_allow_html=True,
+    )
+
+    # Save assistant response
+    if output:
+        st.session_state.messages.append(
+            {
+                "role": "Jarvis",
+                "content": output,
+                "time": f"{ai_timestamp} • {exec_time}s",
+            }
+        )

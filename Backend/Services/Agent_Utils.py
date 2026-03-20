@@ -1,7 +1,8 @@
 from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+
+# from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain.agents import create_agent
-from langchain.messages import HumanMessage
+from langchain.messages import HumanMessage, AIMessageChunk
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
@@ -51,12 +52,13 @@ class Agent:
 
         # create Model
         if agent_role == "Research":
-            thinking_model = ChatNVIDIA(
+            thinking_model = ChatMistralAI(
                 model=self.model_name,
-                max_completion_tokens=100000,
+                # max_completion_tokens=50000,
                 temperature=temperature,
             )
-            self.model = thinking_model.with_thinking_mode(enabled=True)
+            # self.model = thinking_model.with_thinking_mode(enabled=True)
+            self.model = thinking_model
         else:
             self.model = ChatMistralAI(
                 model=self.model_name,
@@ -118,17 +120,49 @@ class Agent:
         Based on input_type processes the user request and invokes the agent.
         """
 
-        response = self.agent.invoke(
-            {"messages": [HumanMessage(content=input_text)]},
+        stream = self.agent.stream(
+            input={"messages": [HumanMessage(content=input_text)]},
             context=metadata(
                 user="user", agent_role=self.agent_role, input_type=input_type
             ),
             config={"configurable": {"thread_id": "1"}},
+            stream_mode="messages",
         )
+        for chunk in stream:
+            if isinstance(chunk, tuple):
+                message, _ = chunk
+            else:
+                message = chunk
 
-        output = response["messages"][-1].content
-        output = self.StringParser.invoke(output)
-        return output
+            if isinstance(message, AIMessageChunk):
+                if hasattr(message, "content") and message.content:
+
+                    content = message.content
+
+                    if isinstance(content, str):
+                        yield content
+
+                    elif isinstance(content, list):
+                        for item in content:
+
+                            if not isinstance(item, dict):
+                                continue
+
+                            item_type = item.get("type")
+
+                            if item_type == "thinking":
+                                continue
+                            if item_type in ["text", "output_text"]:
+                                yield item.get("text", "")
+
+                            for value in item.values():
+                                if isinstance(value, list):
+                                    for sub in value:
+                                        if (
+                                            isinstance(sub, dict)
+                                            and sub.get("type") == "text"
+                                        ):
+                                            yield sub.get("text", "")
 
     def clear_vectorstore(self):
         if hasattr(self, "vector_store") and self.vector_store is not None:
