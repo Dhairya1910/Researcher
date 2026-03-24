@@ -11,6 +11,12 @@ from Backend.Services.Agent_Utils import Agent
 st.set_page_config(page_title="Research AI", layout="wide")
 
 
+"""
+|============================================================|
+|This file was only created for testing out working of agent.|
+|============================================================|
+"""
+
 # -------------------------
 # SESSION STATE INITIALIZE
 # -------------------------
@@ -32,9 +38,7 @@ def init_state():
 
 init_state()
 
-# -------------------------
-# UI STYLING
-# -------------------------
+
 st.markdown(
     """
 <style>
@@ -136,9 +140,7 @@ with st.sidebar:
         st.session_state.uploaded_file = uploaded
         st.info(f"Active: {uploaded.name}")
 
-# -------------------------
-# MAIN CHAT
-# -------------------------
+
 st.markdown(
     f"<h1 class='main-title'>{st.session_state.mode} Assistant</h1>",
     unsafe_allow_html=True,
@@ -160,9 +162,6 @@ for msg in st.session_state.messages:
         unsafe_allow_html=True,
     )
 
-# -------------------------
-# INPUT
-# -------------------------
 prompt = st.chat_input("How can I help you today?")
 
 if prompt:

@@ -1,18 +1,9 @@
-"""
-FastAPI server that bridges the custom HTML frontend to the existing backend.
-All backend logic (Agent, Tools, Middleware) remains untouched.
-"""
-
 import sys
-import os
 import json
-import asyncio
 from pathlib import Path
-from typing import Optional
 
-from fastapi import FastAPI, UploadFile, File, Form, Request
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 # Adjust path so we can import Backend modules
@@ -29,7 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── In-memory session state (mirrors Streamlit's st.session_state) ──
 session = {
     "model": "mistral-medium-latest",
     "mode": "General",
@@ -60,14 +50,12 @@ def get_or_create_agent() -> Agent:
     return session["agent"]
 
 
-# ── Serve the HTML frontend ──
 @app.get("/", response_class=HTMLResponse)
 async def serve_frontend():
     html_path = Path(__file__).parent / "index.html"
     return FileResponse(html_path, media_type="text/html")
 
 
-# ── Configuration endpoint ──
 @app.post("/api/config")
 async def update_config(request: Request):
     """Update model and mode settings."""
@@ -88,7 +76,6 @@ async def update_config(request: Request):
     }
 
 
-# ── File upload endpoint ──
 @app.post("/api/upload")
 async def upload_file(file: UploadFile = File(...)):
     """Upload a PDF/image file to use as context."""
@@ -116,7 +103,6 @@ async def upload_file(file: UploadFile = File(...)):
     }
 
 
-# ── Clear file/vectorstore endpoint ──
 @app.post("/api/clear-file")
 async def clear_file():
     """Remove uploaded file and clear vectorstore."""
@@ -128,7 +114,6 @@ async def clear_file():
     return {"status": "ok"}
 
 
-# ── Chat endpoint with Server-Sent Events streaming ──
 @app.post("/api/chat")
 async def chat(request: Request):
     """Stream agent response via SSE."""
@@ -144,10 +129,8 @@ async def chat(request: Request):
         try:
             stream = agent.Invoke_agent(message, f_type)
             for chunk in stream:
-                # SSE format: data: <json>\n\n
                 payload = json.dumps({"type": "chunk", "content": chunk})
                 yield f"data: {payload}\n\n"
-            # Signal completion
             yield f"data: {json.dumps({'type': 'done'})}\n\n"
         except Exception as e:
             error_payload = json.dumps({"type": "error", "content": str(e)})
@@ -164,7 +147,6 @@ async def chat(request: Request):
     )
 
 
-# ── Clear conversation endpoint ──
 @app.post("/api/clear")
 async def clear_conversation():
     """Clear conversation — reset agent to force new memory."""
@@ -178,7 +160,6 @@ async def clear_conversation():
     return {"status": "ok"}
 
 
-# ── Status endpoint ──
 @app.get("/api/status")
 async def status():
     return {
