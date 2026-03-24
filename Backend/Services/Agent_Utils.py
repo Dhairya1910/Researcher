@@ -10,7 +10,14 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from chromadb.config import Settings
 import sys
+import os
 from pathlib import Path
+
+# Dynamic vector store path: /tmp on Vercel, local dir otherwise
+if os.environ.get("VERCEL"):
+    _VECTOR_STORE_DIR = "/tmp/vector_datastore"
+else:
+    _VECTOR_STORE_DIR = str(Path(__file__).resolve().parent.parent / "vector_datastore")
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from Backend.Services.MiddleWares import ResearcherMiddleware
@@ -71,7 +78,7 @@ class Agent:
         self.vector_store = Chroma(
             collection_name="User_data",
             embedding_function=self.embedding_model,
-            persist_directory=r"d:\Researcher\Backend\vector_datastore",
+            persist_directory=_VECTOR_STORE_DIR,
             client_settings=Settings(allow_reset=True),
         )
 
@@ -102,7 +109,7 @@ class Agent:
         self.vector_store = Chroma(
             collection_name="User_data",
             embedding_function=self.embedding_model,
-            persist_directory=r"d:\Researcher\Backend\vector_datastore",
+            persist_directory=_VECTOR_STORE_DIR,
             client_settings=Settings(allow_reset=True),
         )
 
