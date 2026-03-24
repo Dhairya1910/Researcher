@@ -1,10 +1,24 @@
+# Virtual env
 .venv
+
+# Python cache (all directories)
+__pycache__/
+*.pyc
+*.pyo
+
+# Init files (auto-generated)
 Backend/__init__.py
-Backend/__pycache__
 Backend/PromptTemplates/__init__.py
-Backend/Services/__pycache__
 Backend/Services/__init__.py
-Backend/Services/.env
-Backend/vector_datastore
 Frontend/__init__.py
 __init__.py
+
+# Secrets
+.env
+Backend/Services/.env
+
+# Runtime data
+Backend/vector_datastore
+
+# Vercel
+.vercel
