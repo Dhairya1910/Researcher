@@ -1,6 +1,5 @@
 from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
 
-# from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage, AIMessageChunk
 from langchain_core.output_parsers import StrOutputParser
@@ -13,13 +12,6 @@ import sys
 import os
 from pathlib import Path
 
-# Dynamic vector store path: /tmp on Vercel, local dir otherwise
-if os.environ.get("VERCEL"):
-    _VECTOR_STORE_DIR = "/tmp/vector_datastore"
-else:
-    _VECTOR_STORE_DIR = str(Path(__file__).resolve().parent.parent / "vector_datastore")
-
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 from Backend.Services.MiddleWares import ResearcherMiddleware
 from Backend.Services.tools import ResearchToolkit
 
@@ -27,6 +19,23 @@ from typing import TypedDict
 from pypdf import PdfReader
 import io
 from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env_path = BASE_DIR / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+    print("Local .env loaded")
+else:
+    print(" No .env file found (Render will use dashboard env vars)")
+
+if os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_URL"):
+    _VECTOR_STORE_DIR = "/tmp/vector_datastore"
+else:
+    _VECTOR_STORE_DIR = str(BASE_DIR / "vector_datastore")
+
+
+sys.path.append(str(BASE_DIR))
 
 
 class metadata(TypedDict):
@@ -51,30 +60,25 @@ class Agent:
 
         self.agent_role = agent_role
 
-        # verify and load API keys.
-        if load_dotenv():
-            print("API verfied.")
+        if os.getenv("API_KEY"):
+            print("API Key detected")
         else:
-            print("Api Key not verified.")
+            raise ValueError("API_KEY not found in environment variables")
 
-        # create Model
         if agent_role == "Research":
             thinking_model = ChatMistralAI(
                 model=self.model_name,
-                # max_completion_tokens=50000,
                 temperature=temperature,
             )
-            # self.model = thinking_model.with_thinking_mode(enabled=True)
             self.model = thinking_model
         else:
             self.model = ChatMistralAI(
                 model=self.model_name,
                 temperature=temperature,
             )
-        # Create embedding model
-        self.embedding_model = MistralAIEmbeddings(model="mistral-embed")
 
-        # Create Vector datastore.
+        # Embeddings
+        self.embedding_model = MistralAIEmbeddings(model="mistral-embed")
         self.vector_store = Chroma(
             collection_name="User_data",
             embedding_function=self.embedding_model,
@@ -82,17 +86,17 @@ class Agent:
             client_settings=Settings(allow_reset=True),
         )
 
-        # Initiating toolkit
+        # Toolkit
         self.toolkit = ResearchToolkit(vector_store=self.vector_store)
 
-        # add_context middle ware
+        # Middleware
         Add_context_middleware = ResearcherMiddleware()
 
-        # Create agent
+        # Agent
         self.agent = create_agent(
             model=self.model,
             tools=self.toolkit.get_tools(),
-            system_prompt="""
+            system_prompt=f"""
             You are a {agent_role}, you main goal is to assist the user as much you can,
             use tools provided to you for assisting the user.
             """,
@@ -106,6 +110,8 @@ class Agent:
         Convert byte data into text from PDF and stores it to vector database.
         """
         reader = PdfReader(io.BytesIO(bytes_data))
+
+        # Re-init vector store (same fix applied)
         self.vector_store = Chroma(
             collection_name="User_data",
             embedding_function=self.embedding_model,
@@ -115,7 +121,9 @@ class Agent:
 
         text = ""
         for page in reader.pages:
-            text += page.extract_text()
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
 
         chunks = self.splitter.split_text(text)
         self.vector_store.add_texts(chunks)
@@ -135,6 +143,7 @@ class Agent:
             config={"configurable": {"thread_id": "1"}},
             stream_mode="messages",
         )
+
         for chunk in stream:
             if isinstance(chunk, tuple):
                 message, _ = chunk
@@ -159,6 +168,7 @@ class Agent:
 
                             if item_type == "thinking":
                                 continue
+
                             if item_type in ["text", "output_text"]:
                                 yield item.get("text", "")
 
@@ -176,9 +186,7 @@ class Agent:
             try:
                 all_ids = self.vector_store.get(include=[])["ids"]
                 self.vector_store.delete(ids=all_ids)
-                # self.vector_store.reset_collection()
                 print("Whole vector store reset.")
-                # self.vector_store._client.create_collection("User_data")
             except Exception as e:
                 self.vector_store.delete_collection()
                 print(f"Collection cleared: {e}")
