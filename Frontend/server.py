@@ -15,10 +15,10 @@ app = FastAPI(title="Research AI - Jarvis")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://researcher-frontend-eta.vercel.app/",  # Your Vercel URL 
-        "http://localhost:3000",                    # Local development
-        "http://localhost:8000",                    # Local development
-        "http://127.0.0.1:5500",                   # VS Code Live Server
+        "https://researcher-frontend-eta.vercel.app",  # Your Vercel URL
+        "http://localhost:3000",  # Local development
+        "http://localhost:8000",  # Local development
+        "http://127.0.0.1:5500",  # VS Code Live Server
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -41,10 +41,7 @@ def get_or_create_agent() -> Agent:
     mode = session["mode"]
     model = session["model"]
 
-    if (
-        session["agent"] is None
-        or session["current_agent_mode"] != mode
-    ):
+    if session["agent"] is None or session["current_agent_mode"] != mode:
         print(f"[server] Creating new Agent: model={model}, role={mode}")
         session["agent"] = Agent(
             model_name=model,
@@ -58,6 +55,7 @@ def get_or_create_agent() -> Agent:
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "Researcher API is running"}
+
 
 # @app.get("/", response_class=HTMLResponse)
 # async def serve_frontend():
@@ -182,4 +180,5 @@ async def status():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
