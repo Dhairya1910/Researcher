@@ -22,18 +22,30 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env_path = BASE_DIR / ".env"
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
-    print("Local .env loaded")
-else:
-    print(" No .env file found (Render will use dashboard env vars)")
+
+env_paths = [
+    Path(__file__).resolve().parent / ".env",   # Backend/Services/.env
+    BASE_DIR / ".env",                           # Backend/.env
+    BASE_DIR.parent / ".env",                    # Project root .env
+]
+
+env_loaded = False
+for env_path in env_paths:
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+        print(f"Local .env loaded from: {env_path}")
+        env_loaded = True
+        break
+
+if not env_loaded:
+    print("No .env file found (using system environment variables from Render)")
 
 if os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_URL"):
     _VECTOR_STORE_DIR = "/tmp/vector_datastore"
 else:
     _VECTOR_STORE_DIR = str(BASE_DIR / "vector_datastore")
 
+os.makedirs(_VECTOR_STORE_DIR, exist_ok=True)
 
 sys.path.append(str(BASE_DIR))
 
@@ -60,25 +72,37 @@ class Agent:
 
         self.agent_role = agent_role
 
-        if os.getenv("API_KEY"):
-            print("API Key detected")
+        mistral_key = os.getenv("MISTRAL_API_KEY") or os.getenv("API_KEY")
+
+        if mistral_key:
+            # Set it so ChatMistralAI can find it automatically
+            os.environ["MISTRAL_API_KEY"] = mistral_key
+            print("Mistral API Key detected ✅")
         else:
-            raise ValueError("API_KEY not found in environment variables")
+            raise ValueError(
+                "MISTRAL_API_KEY not found in environment variables. "
+                "Set it in your .env file (local) or Render dashboard (production)."
+            )
 
         if agent_role == "Research":
             thinking_model = ChatMistralAI(
                 model=self.model_name,
                 temperature=temperature,
+                api_key=mistral_key,
             )
             self.model = thinking_model
         else:
             self.model = ChatMistralAI(
                 model=self.model_name,
                 temperature=temperature,
+                api_key=mistral_key,
             )
 
         # Embeddings
-        self.embedding_model = MistralAIEmbeddings(model="mistral-embed")
+        self.embedding_model = MistralAIEmbeddings(
+            model="mistral-embed",
+            api_key=mistral_key,
+        )
         self.vector_store = Chroma(
             collection_name="User_data",
             embedding_function=self.embedding_model,
@@ -112,9 +136,13 @@ class Agent:
         reader = PdfReader(io.BytesIO(bytes_data))
 
         # Re-init vector store (same fix applied)
+        mistral_key = os.getenv("MISTRAL_API_KEY") or os.getenv("API_KEY")
         self.vector_store = Chroma(
             collection_name="User_data",
-            embedding_function=self.embedding_model,
+            embedding_function=MistralAIEmbeddings(
+                model="mistral-embed",
+                api_key=mistral_key,
+            ),
             persist_directory=_VECTOR_STORE_DIR,
             client_settings=Settings(allow_reset=True),
         )
