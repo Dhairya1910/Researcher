@@ -6,7 +6,7 @@ from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-# Adjust path so we can import Backend modules
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from Backend.Services.Agent_Utils import Agent
 
@@ -14,7 +14,12 @@ app = FastAPI(title="Research AI - Jarvis")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://your-project-name.vercel.app",  # Your Vercel URL (update after deploying)
+        "http://localhost:3000",                    # Local development
+        "http://localhost:8000",                    # Local development
+        "http://127.0.0.1:5500",                   # VS Code Live Server
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,10 +55,14 @@ def get_or_create_agent() -> Agent:
     return session["agent"]
 
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_frontend():
-    html_path = Path(__file__).parent / "index.html"
-    return FileResponse(html_path, media_type="text/html")
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Researcher API is running"}
+
+# @app.get("/", response_class=HTMLResponse)
+# async def serve_frontend():
+#     html_path = Path(__file__).parent / "index.html"
+#     return FileResponse(html_path, media_type="text/html")
 
 
 @app.post("/api/config")

@@ -22,3 +22,4 @@ Backend/vector_datastore
 
 # Vercel
 .vercel
+.claude

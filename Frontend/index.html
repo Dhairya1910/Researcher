@@ -889,6 +889,7 @@ body {
 </div>
 
 <script>
+
 /* ═══════════════════════════════════════════════════
    JARVIS FRONTEND — Connected to FastAPI Backend
    All AI processing happens server-side via the
@@ -896,6 +897,7 @@ body {
    ═══════════════════════════════════════════════════ */
 
 const API_BASE = '';  // same origin
+const API_BASE_URL = "https://your-backend-name.onrender.com";
 
 const state = {
   model: 'mistral-medium-latest',
@@ -924,7 +926,7 @@ async function setMode(m) {
   }
 
   // Sync config with backend
-  await fetch(API_BASE + '/api/config', {
+  await fetch(`${API_BASE_URL}/api/config`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model: state.model, mode: state.mode }),
@@ -936,7 +938,7 @@ document.getElementById('model-select').addEventListener('change', async functio
   if (state.mode !== 'Research') {
     state.model = this.value;
     document.getElementById('model-pill-text').textContent = this.value;
-    await fetch(API_BASE + '/api/config', {
+    await fetch(`${API_BASE_URL}/api/config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: state.model }),
@@ -958,7 +960,7 @@ async function handleFile(inp) {
   try {
     const formData = new FormData();
     formData.append('file', f);
-    const res = await fetch(API_BASE + '/api/upload', {
+    const res = await fetch(`${API_BASE_URL}/api/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -985,7 +987,7 @@ async function removeFile(e) {
   document.getElementById('upload-fname').textContent = '';
   document.getElementById('file-input').value = '';
 
-  await fetch(API_BASE + '/api/clear-file', { method: 'POST' });
+  await fetch(`${API_BASE_URL}/api/clear-file`, { method: 'POST' });
   showToast('File removed');
 }
 
@@ -993,7 +995,7 @@ async function removeFile(e) {
 async function clearChat() {
   state.messages = [];
   renderWelcome();
-  await fetch(API_BASE + '/api/clear', { method: 'POST' });
+  await fetch(`${API_BASE_URL}/api/clear`, { method: 'POST' });
   showToast('Conversation cleared');
 }
 
@@ -1135,7 +1137,7 @@ async function sendMessage() {
 
 // ── Backend SSE streaming call ──
 async function callBackendSSE(message) {
-  const res = await fetch(API_BASE + '/api/chat', {
+  const res = await fetch(`${API_BASE_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message }),
