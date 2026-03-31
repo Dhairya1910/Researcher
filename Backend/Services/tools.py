@@ -67,10 +67,7 @@ class ResearchToolkit(BaseToolkit):
         @tool
         def general_search_mode(query: str) -> str:
             """
-            Acts as a fallback retrieval tool. Use this ONLY when information
-            cannot be found within the provided documents or internal context.
-            It is ideal for verifying external facts, dates, or general knowledge
-            that is missing from the user's uploaded files.
+            this tool should be used to fact check, get latest news,get a small summary,Basic definitions,
             """
             print("General-search-tool accessed.")
             results = duck_search.invoke(query)
@@ -82,7 +79,7 @@ class ResearchToolkit(BaseToolkit):
             Executes a high-intensity, 'Deep Research' web search.
 
             TRIGGER THIS TOOL ONLY WHEN:
-            1. The user requires 'Latest News', 'Current Events', or 'Real-time Data' (Post-2024).
+            1. The user requires 'Latest News', 'Current Events', or 'Real-time Data' (after-2024).
             2. The internal knowledge base lacks specific technical details or external 'Source Links'.
             3. The query demands 'Deep Insights' or 'Fact-Checking' against authoritative web sources.
             4. You need to provide verifiable URLs and citations for professional-grade research.
@@ -91,22 +88,38 @@ class ResearchToolkit(BaseToolkit):
             - Basic definitions found in your pre-trained knowledge.
             - Simple conversational tasks or math.
 
-            Returns: A list of dicts containing Title (T), URL (U), and extracted Highlights (C).
+            Returns: A list of dicts containing Title (T), URL (U), Date (D), and extracted Highlights (C).
             """
             print("Advance-search-tool accessed.")
 
             result = exa.search(
                 query,
                 type="auto",
-                num_results=5,
-                contents={"highlights": {"max_characters": 1000}},
+                use_autoprompt=True,
+                num_results=8,
+                contents={
+                    "highlights": {"max_characters": 1200, "num_sentences": 5},
+                    "text": {"max_characters": 2000},
+                },
             )
             cleaned_data = []
 
             for article in result.results:
-                complete_highlight = " ".join(article.highlights).strip()
+                highlights = getattr(article, "highlights", []) or []
+                complete_highlight = " ".join(highlights).strip()
+                # Fallback to text content if highlights empty
+                if not complete_highlight:
+                    complete_highlight = (getattr(article, "text", "") or "")[:1200]
+                published_date = (
+                    getattr(article, "published_date", None) or "Unknown date"
+                )
                 cleaned_data.append(
-                    {"T": article.title, "U": article.url, "C": complete_highlight}
+                    {
+                        "T": article.title,
+                        "U": article.url,
+                        "D": published_date,
+                        "C": complete_highlight,
+                    }
                 )
 
             return cleaned_data

@@ -436,7 +436,7 @@ Tools Available:
 Strategy:
 - ALWAYS check the document FIRST for relevant information
 - If the document is insufficient or outdated, use web search tools
-- Select ONLY the most useful queries (max 5)
+- Select ONLY the most useful queries (max 8)
 
 Base Query: {base_query}
 
@@ -459,7 +459,7 @@ Decision Rules:
 - Use "advanced_search" when: latest news, current events, real-time data, citations needed, deep research
 - Use "general_search" when: simple facts, quick lookups, general knowledge
 - Use "none" when: simple math, greetings, or clearly answerable without web search
-- Select ONLY the most useful queries (max 5)
+- Select ONLY the most useful queries (max 8)
 
 Base Query: {base_query}
 
@@ -490,7 +490,7 @@ Allowed values for "tool": "general_search", "advanced_search", "none"
         decision = {
             "use_tool": True,
             "tool": fallback_tool,
-            "selected_queries": queries[:5],
+            "selected_queries": queries[:8],
         }
     else:
         # Validate tool value is one of the known tools
@@ -521,7 +521,6 @@ def make_tool_executor_node(toolkit):
         use_tool = decision.get("use_tool", False)
         tool_type = decision.get("tool", "none")
         queries = decision.get("selected_queries", [])
-        input_type = state.get("input_type", "general")
 
         if not use_tool or tool_type == "none" or not queries:
             logger.info("[ToolExecutor] SKIPPED (No tool needed)")
@@ -691,12 +690,36 @@ def make_generate_output_node(agent_role: str):
 
         # ── Build context string ──
         context_blocks = []
+        citation_list = []  # Accumulate URL citations from Exa results
+        citation_index = 1
+
         for i, tr in enumerate(tool_results, 1):
+            raw_result = tr["result"]
+            tool_name = tr["tool"]
+
+            # If the result is a list of Exa dicts (from advanced search), format with citations
+            if isinstance(raw_result, list):
+                formatted_sources = []
+                for item in raw_result:
+                    title = item.get("T", "")
+                    url = item.get("U", "")
+                    date = item.get("D", "")
+                    content = item.get("C", "")
+                    ref_label = f"[{citation_index}]"
+                    formatted_sources.append(
+                        f"{ref_label} **{title}** ({date})\n{content}"
+                    )
+                    citation_list.append(f"{ref_label} {title} — {url}")
+                    citation_index += 1
+                result_str = "\n\n".join(formatted_sources)
+            else:
+                result_str = str(raw_result)
+
             context_blocks.append(
                 f"[Source {i}]\n"
                 f"Query : {tr['query']}\n"
-                f"Tool  : {tr['tool']}\n"
-                f"Result:\n{tr['result']}"
+                f"Tool  : {tool_name}\n"
+                f"Result:\n{result_str}"
             )
 
         context_str = (
@@ -704,6 +727,11 @@ def make_generate_output_node(agent_role: str):
             if context_blocks
             else "No external sources retrieved."
         )
+
+        # Append citation reference list at end of context if URLs found
+        if citation_list:
+            citation_block = "\n\n---\n\n### Source URLs:\n" + "\n".join(citation_list)
+            context_str += citation_block
 
         if is_research:
             system_prompt = """
@@ -715,7 +743,10 @@ def make_generate_output_node(agent_role: str):
                 Your output must be comprehensive, technically precise, and organized
                 by topic/concept (NOT by query). Cover mechanisms, theory, applications
                 limitations, and recent trends. Support claims with the provided sources.
-                Use inline citations like [Source N] where appropriate."""
+                Use inline citations like [1], [2], etc. where appropriate, matching
+                the numbered references in the Source URLs section of the context.
+                At the end of your response, include a **References** section listing
+                each cited URL in full format: [N] Title — URL"""
 
         else:
             system_prompt = """
@@ -726,7 +757,9 @@ def make_generate_output_node(agent_role: str):
                 You are a knowledgeable research assistant.
                 Your output must be clear, structured, and informative. 
                 Use headers and bullet points for readability. 
-                Be accurate and support answers with the provided context."""
+                Be accurate and support answers with the provided context.
+                Use inline citations like [1], [2], etc. where source URLs are available.
+                At the end, include a **References** section for any cited URLs."""
 
         user_prompt = f"""
 
@@ -744,9 +777,10 @@ def make_generate_output_node(agent_role: str):
                 - Provide in-depth information covering each angle
                 - Organize your output by topic/concept — NOT by query order
                 - Do NOT list or number the sub-queries in your output
-                - Use inline citations [Source N] where the context supports a claim
+                - Use inline citations [N] matching the numbered source URLs when context supports a claim
                 - Be thorough but avoid unnecessary repetition
                 - The output is for PhD-level readers — be precise and complete
+                - End your response with a **References** section listing all cited sources with their URLs
                 """
 
         logger.info("[GenerateOutput] Invoking main LLM...")
