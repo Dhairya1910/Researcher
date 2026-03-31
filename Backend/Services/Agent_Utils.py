@@ -299,37 +299,43 @@ class Agent:
         }
 
         logger.info(f"[Agent.Invoke_agent] Normalized input_type: {normalized_type}")
-        logger.info("[Agent.Invoke_agent] Invoking LangGraph...")
+        logger.info("[Agent.Invoke_agent] Invoking LangGraph with improved streaming...")
         _flush()
 
         try:
-            final_state = self._graph.invoke(initial_state)
-            output = final_state.get("output", "")
-
-            logger.info(
-                f"[Agent.Invoke_agent] Graph finished | output={len(output)} chars"
-            )
-            _flush()
-
-            if not output:
-                logger.warning("[Agent.Invoke_agent] Empty output from graph!")
+            output_received = False
+            
+            for event in self._graph.stream(initial_state):
+                # Check if this event contains the generate_output node
+                if "generate_output" in event:
+                    node_output = event["generate_output"]
+                    
+                    # Extract the output text
+                    if isinstance(node_output, dict) and "output" in node_output:
+                        output_text = node_output["output"]
+                        output_received = True
+                        
+                        logger.info(
+                            f"[Agent.Invoke_agent] Output node completed | {len(output_text)} chars"
+                        )
+                        _flush()
+                        
+                        CHUNK_SIZE = 20  # Smaller chunks for smoother streaming
+                        chunk_count = 0
+                        
+                        for i in range(0, len(output_text), CHUNK_SIZE):
+                            chunk_count += 1
+                            chunk = output_text[i : i + CHUNK_SIZE]
+                            yield chunk
+                        
+                        logger.info(f"[Agent.Invoke_agent] Streamed {chunk_count} chunks ✓")
+                        _flush()
+                        
+            
+            if not output_received:
+                logger.warning("[Agent.Invoke_agent] No output generated from graph!")
                 _flush()
                 yield "I was unable to generate a response. Please try again."
-                return
-
-            # Real-time streaming: yield smaller chunks more frequently for smooth animation
-            # Characters per chunk - smaller = smoother but more overhead
-            CHUNK_SIZE = 30  # Small chunks for smooth real-time feel
-            chunk_count = 0
-            
-            for i in range(0, len(output), CHUNK_SIZE):
-                chunk_count += 1
-                chunk = output[i : i + CHUNK_SIZE]
-                yield chunk
-                # No artificial delay here - let the frontend handle display timing
-
-            logger.info(f"[Agent.Invoke_agent] Streamed {chunk_count} chunks ✓")
-            _flush()
 
         except Exception as e:
             logger.error(f"[Agent.Invoke_agent] Graph ERROR: {e}", exc_info=True)

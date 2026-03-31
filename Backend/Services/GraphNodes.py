@@ -53,18 +53,15 @@ _flush()
 
 def make_context_extractor_node(toolkit):
     """
-    Returns a context extractor node with toolkit captured in closure.
     Extracts sample content from uploaded document for better query generation.
     """
     
     def context_extractor_node(state: ResearchGraphState) -> dict:
         """
         Extracts context from uploaded document if available.
-        Gets a representative sample of document content for query synthesis.
         """
         input_type = state.get("input_type", "general")
         
-        # Only extract context if document is available
         if input_type not in ("pdf", "docs"):
             logger.info("[ContextExtractor] No document available, skipping context extraction")
             _flush()
@@ -83,7 +80,6 @@ def make_context_extractor_node(toolkit):
                 _flush()
                 return {"context": ""}
             
-            # Extract sample content using broad queries
             user_query = state.get("user_query", "")
             sample_queries = [user_query, "overview", "introduction", "summary", "key concepts"]
             
@@ -191,7 +187,7 @@ def query_classifier_node(state: ResearchGraphState) -> str:
 def query_synthesizer_node(state: ResearchGraphState) -> dict:
     """Expands user query into diverse, high-quality research sub-queries.
     If document context is available, generates 10 targeted queries.
-    Otherwise, generates 30 comprehensive queries for web search.
+    Otherwise, generates 15 comprehensive queries for web search.
     """
     context = state.get("context", "")
     has_context = context and context.strip() and len(context) > 10
@@ -199,7 +195,7 @@ def query_synthesizer_node(state: ResearchGraphState) -> dict:
     if has_context:
         logger.info("[QuerySynthesizer] START - Document context available, generating 10 targeted queries")
     else:
-        logger.info("[QuerySynthesizer] START - No document context, generating 30 comprehensive queries")
+        logger.info("[QuerySynthesizer] START - No document context, generating 15 comprehensive queries")
     _flush()
 
     prompt = query_synthesizer_prompt(state)
@@ -222,7 +218,7 @@ def query_synthesizer_node(state: ResearchGraphState) -> dict:
             "[QuerySynthesizer] Empty result — falling back to original query"
         )
 
-    expected_count = 10 if has_context else 30
+    expected_count = 10 if has_context else 15
     logger.info(f"[QuerySynthesizer] {elapsed:.2f}s | {len(queries)} queries generated (expected: {expected_count})")
     
     # Log a few sample queries
@@ -372,9 +368,9 @@ def query_optimizer_node(state: ResearchGraphState) -> dict:
         f"[QueryOptimizer] Breakdown: {len(queries_to_keep)} kept + {len(optimized_queries)} optimized"
     )
 
-    if len(final_queries) < 25:
+    if len(final_queries) < 12:
         logger.warning(
-            f"[QueryOptimizer] Only {len(final_queries)} queries generated (target: 30)"
+            f"[QueryOptimizer] Only {len(final_queries)} queries generated (target: 15 for general, 10 for document)"
         )
 
     _flush()
@@ -436,7 +432,7 @@ Tools Available:
 Strategy:
 - ALWAYS check the document FIRST for relevant information
 - If the document is insufficient or outdated, use web search tools
-- Select ONLY the most useful queries (max 8)
+- Select ONLY the most useful queries (max 6 for optimal performance)
 
 Base Query: {base_query}
 
@@ -459,7 +455,7 @@ Decision Rules:
 - Use "advanced_search" when: latest news, current events, real-time data, citations needed, deep research
 - Use "general_search" when: simple facts, quick lookups, general knowledge
 - Use "none" when: simple math, greetings, or clearly answerable without web search
-- Select ONLY the most useful queries (max 8)
+- Select ONLY the most useful queries (max 6 for optimal performance)
 
 Base Query: {base_query}
 
@@ -490,7 +486,7 @@ Allowed values for "tool": "general_search", "advanced_search", "none"
         decision = {
             "use_tool": True,
             "tool": fallback_tool,
-            "selected_queries": queries[:8],
+            "selected_queries": queries[:6],
         }
     else:
         # Validate tool value is one of the known tools
@@ -534,7 +530,7 @@ def make_tool_executor_node(toolkit):
         tool_mapping = {
             "document": ("document_retrieval_tool", "DocumentRetrieval"),
             "advanced_search": ("Advance_Search_mode", "ExaSearch"),
-            "general_search": ("general_search_mode", "DuckDuckGo"),
+            "general_search": ("general_search_mode", "Tavily"),
         }
 
         if tool_type not in tool_mapping:
@@ -598,19 +594,19 @@ def make_tool_executor_node(toolkit):
                                     {
                                         "query": query,
                                         "result": web_result,
-                                        "tool": "DuckDuckGo (Fallback)",
+                                        "tool": "Tavily (Fallback)",
                                     }
                                 )
 
                                 preview = query[:60] + "..." if len(query) > 60 else query
                                 logger.info(
-                                    f"[DuckDuckGo-Fallback] ({i}/3) '{preview}' | {elapsed:.2f}s"
+                                    f"[Tavily-Fallback] ({i}/3) '{preview}' | {elapsed:.2f}s"
                                 )
                                 _flush()
 
                             except Exception as e:
                                 logger.error(
-                                    f"[DuckDuckGo-Fallback] ERROR: {e}",
+                                    f"[Tavily-Fallback] ERROR: {e}",
                                     exc_info=True,
                                 )
                                 _flush()
@@ -697,7 +693,7 @@ def make_generate_output_node(agent_role: str):
             raw_result = tr["result"]
             tool_name = tr["tool"]
 
-            # If the result is a list of Exa dicts (from advanced search), format with citations
+            # Handle different result formats for proper citation extraction
             if isinstance(raw_result, list):
                 formatted_sources = []
                 for item in raw_result:
@@ -712,6 +708,34 @@ def make_generate_output_node(agent_role: str):
                     citation_list.append(f"{ref_label} {title} — {url}")
                     citation_index += 1
                 result_str = "\n\n".join(formatted_sources)
+            
+            elif isinstance(raw_result, dict):
+                # Tavily search results - format with citations
+                if "sources" in raw_result:
+                    formatted_sources = []
+                    sources = raw_result.get("sources", [])
+                    
+                    for item in sources:
+                        title = item.get("T", "")
+                        url = item.get("U", "")
+                        content = item.get("C", "")
+                        date = item.get("D", "Recent")
+                        
+                        if title and content:  # Only include if we have content
+                            ref_label = f"[{citation_index}]"
+                            formatted_sources.append(
+                                f"{ref_label} **{title}** ({date})\n{content}"
+                            )
+                            citation_list.append(f"{ref_label} {title} — {url}")
+                            citation_index += 1
+                    
+                    if raw_result.get("answer"):
+                        result_str = f"**AI Summary:** {raw_result['answer']}\n\n"
+                        result_str += "\n\n".join(formatted_sources) if formatted_sources else ""
+                    else:
+                        result_str = "\n\n".join(formatted_sources) if formatted_sources else str(raw_result)
+                else:
+                    result_str = str(raw_result)
             else:
                 result_str = str(raw_result)
 
@@ -728,7 +752,6 @@ def make_generate_output_node(agent_role: str):
             else "No external sources retrieved."
         )
 
-        # Append citation reference list at end of context if URLs found
         if citation_list:
             citation_block = "\n\n---\n\n### Source URLs:\n" + "\n".join(citation_list)
             context_str += citation_block
@@ -737,29 +760,44 @@ def make_generate_output_node(agent_role: str):
             system_prompt = """
 
                 IMPORTANT : 
-                if the user is having causal convertation then reply casually.
+                if the user is having casual conversation then reply casually.
 
                 You are a deep research assistant providing PhD-level analysis.
                 Your output must be comprehensive, technically precise, and organized
-                by topic/concept (NOT by query). Cover mechanisms, theory, applications
+                by topic/concept (NOT by query). Cover mechanisms, theory, applications,
                 limitations, and recent trends. Support claims with the provided sources.
-                Use inline citations like [1], [2], etc. where appropriate, matching
-                the numbered references in the Source URLs section of the context.
-                At the end of your response, include a **References** section listing
-                each cited URL in full format: [N] Title — URL"""
+                
+                **CRITICAL CITATION REQUIREMENTS:**
+                - Use inline citations like [1], [2], etc. IMMEDIATELY after each claim
+                - Match numbered references to the Source URLs section provided in context
+                - NEVER fabricate citations - only use the numbered sources provided
+                - Place citations RIGHT AFTER the supported statement, not clustered at end
+                - Multiple sources for one claim? Use multiple citations: [1][2][3]
+                - At the end, include a **References** section listing all cited URLs in format:
+                  [N] Title — URL
+                - Every fact, statistic, or claim should have a citation when sources are available
+                """
 
         else:
             system_prompt = """
             
                 IMPORTANT : 
-                if the user is having causal convertation then reply casually.
+                if the user is having casual conversation then reply casually.
 
                 You are a knowledgeable research assistant.
                 Your output must be clear, structured, and informative. 
                 Use headers and bullet points for readability. 
                 Be accurate and support answers with the provided context.
-                Use inline citations like [1], [2], etc. where source URLs are available.
-                At the end, include a **References** section for any cited URLs."""
+                
+                **CITATION REQUIREMENTS:**
+                - Use inline citations like [1], [2], etc. where source URLs are available
+                - Place citations IMMEDIATELY after the claim they support
+                - Do NOT move all citations to the end - embed them inline
+                - Match citation numbers to the Source URLs in the context
+                - At the end, include a **References** section listing cited URLs:
+                  [N] Title — URL
+                - Only use citations that appear in the Source URLs section - don't fabricate
+                """
 
         user_prompt = f"""
 
@@ -777,10 +815,12 @@ def make_generate_output_node(agent_role: str):
                 - Provide in-depth information covering each angle
                 - Organize your output by topic/concept — NOT by query order
                 - Do NOT list or number the sub-queries in your output
-                - Use inline citations [N] matching the numbered source URLs when context supports a claim
+                - **CRITICAL: Use inline citations [N] IMMEDIATELY after each claim** - match to numbered Source URLs
+                - Place citations right after the supported fact, not clustered at document end
+                - Every factual claim should have a citation when available
                 - Be thorough but avoid unnecessary repetition
-                - The output is for PhD-level readers — be precise and complete
-                - End your response with a **References** section listing all cited sources with their URLs
+                - The output is for professional/academic readers — be precise and complete
+                - **MANDATORY: End with a References section** listing: [N] Title — URL (for each citation used)
                 """
 
         logger.info("[GenerateOutput] Invoking main LLM...")

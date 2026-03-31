@@ -1,7 +1,7 @@
 from langchain_core.tools import tool, BaseTool, BaseToolkit
 
 # from langchain_community.utilities import jina_search
-from langchain_community.tools import DuckDuckGoSearchRun
+from tavily import TavilyClient
 from exa_py import Exa
 from dotenv import load_dotenv
 import os
@@ -25,9 +25,11 @@ class ResearchToolkit(BaseToolkit):
 
     def get_tools(self) -> list[BaseTool]:
         load_dotenv()
-        api_key = os.getenv("EXA_API_KEY")
-        exa = Exa(api_key=api_key)
-        duck_search = DuckDuckGoSearchRun()
+        exa_api_key = os.getenv("EXA_API_KEY")
+        tavily_api_key = os.getenv("TAVILY_API_KEY")
+        
+        exa = Exa(api_key=exa_api_key)
+        tavily = TavilyClient(api_key=tavily_api_key)
 
         @tool
         def document_retrieval_tool(queries: List[str]) -> str:
@@ -65,13 +67,53 @@ class ResearchToolkit(BaseToolkit):
             return context_text
 
         @tool
-        def general_search_mode(query: str) -> str:
+        def general_search_mode(query: str) -> dict:
             """
-            this tool should be used to fact check, get latest news,get a small summary,Basic definitions,
+            Fast, reliable web search using Tavily API for fact-checking, latest news, 
+            basic definitions, and general information retrieval.
+            
+            Use this tool for:
+            - Quick fact-checking and verification
+            - Latest news and current events
+            - Basic definitions and overviews
+            - General information lookups
+            
+            Returns: Dict with search results including titles, URLs, and content snippets.
             """
-            print("General-search-tool accessed.")
-            results = duck_search.invoke(query)
-            return results
+            print(f"General-search-tool (Tavily) accessed with query: {query}")
+            try:
+                response = tavily.search(
+                    query=query,
+                    max_results=5,
+                    search_depth="basic",
+                    include_answer=True,
+                    include_raw_content=False,
+                )
+
+                formatted_results = []
+                for result in response.get("results", []):
+                    formatted_results.append({
+                        "T": result.get("title", ""),
+                        "U": result.get("url", ""),
+                        "C": result.get("content", ""),
+                        "D": "Recent"  
+                    })
+                
+            
+                if response.get("answer"):
+                    return {
+                        "answer": response["answer"],
+                        "sources": formatted_results
+                    }
+                
+                return {"sources": formatted_results}
+                
+            except Exception as e:
+                print(f"Tavily search error: {e}")
+                return {
+                    "error": f"Search failed: {str(e)}",
+                    "sources": []
+                }
 
         @tool
         def Advance_Search_mode(query: str) -> dict:

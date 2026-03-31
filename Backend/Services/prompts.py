@@ -49,11 +49,11 @@ def query_synthesizer_prompt(state):
         **Generate EXACTLY 10 document-targeted queries.**
     """
     
-    # If no document context, generate 30 diverse queries for web search
+
     else:
         return f"""
         You are an expert Query Optimization Agent.
-        Your task is to transform a single user query into EXACTLY 30 diverse, high-quality, and information-rich sub-queries that cover the topic comprehensively.
+        Your task is to transform a single user query into EXACTLY 15 diverse, high-quality, and information-rich sub-queries that cover the topic comprehensively.
         
         ### Objectives:
         1. Break down the original query into multiple meaningful angles.
@@ -108,7 +108,7 @@ def query_synthesizer_prompt(state):
         User Query: {state['user_query']}
         Current datetime: {datetime.now()}
         
-        **Generate EXACTLY 30 diverse, high-quality sub-queries.**
+        **Generate EXACTLY 15 diverse, high-quality sub-queries.**
     """
 
 
@@ -166,7 +166,7 @@ def query_evaluator_prompt(state):
         - Do NOT answer the queries themselves.
         - MUST return a score for EVERY query in the refined_queries list.
         - Scores must be integers between 0 and 10.
-        - Expect around 30 queries to evaluate for research mode.
+        - Expect around 10-15 queries to evaluate depending on mode (15 for general, 10 for document).
 
         ### Input:
         Base Query: {state["user_query"]}  
