@@ -65,7 +65,7 @@ Defines the state structure that flows through the graph:
 
 **tools.py**
 Integrates external and internal tools:
-- DuckDuckGo: Free web search without API keys
+- Tavily: Fast, reliable web search with structured results and AI summaries
 - Exa AI: Advanced semantic web search with real-time indexing
 - ChromaDB: Local vector database for document retrieval
 - Web Fetch: Direct content extraction from URLs
@@ -157,7 +157,7 @@ Proper source tracking and attribution:
 
 - Python 3.10 or higher
 - pip or uv package manager (uv recommended)
-- API keys for Mistral and Exa AI (optional for basic functionality)
+- API keys for Mistral, Tavily, and Exa AI (optional for basic functionality)
 
 ### Step 1: Clone the Repository
 
@@ -202,11 +202,15 @@ cp .env.example .env
 Edit `.env` with your API keys:
 ```
 MISTRAL_API_KEY=your_mistral_key_here
+TAVILY_API_KEY=your_tavily_key_here
 EXA_API_KEY=your_exa_api_key_here
 OPENAI_API_KEY=optional_for_fallback
 ```
 
-Leave keys blank to use free alternatives (DuckDuckGo for web search).
+Get API keys from:
+- Mistral: https://console.mistral.ai/
+- Tavily: https://tavily.com/
+- Exa: https://exa.ai/
 
 ## Configuration
 
@@ -214,6 +218,7 @@ Leave keys blank to use free alternatives (DuckDuckGo for web search).
 
 Required for full functionality:
 - `MISTRAL_API_KEY`: Mistral API key for LLM inference
+- `TAVILY_API_KEY`: Tavily API key for fast, reliable web search
 - `EXA_API_KEY`: Exa AI API key for advanced web search
 - `OPENAI_API_KEY`: Optional, for fallback LLM provider
 
