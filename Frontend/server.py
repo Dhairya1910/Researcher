@@ -152,6 +152,7 @@ log_flush()
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
 
@@ -205,6 +206,11 @@ async def lifespan(app: FastAPI):
 # ──────────────────────────────────────────────────────────────
 
 app = FastAPI(title="Research AI - Jarvis", lifespan=lifespan)
+
+# Mount static files (favicon, assets, etc.)
+_STATIC_DIR = Path(__file__).parent / "static"
+_STATIC_DIR.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
