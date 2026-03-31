@@ -1,0 +1,835 @@
+2026-03-31 10:09:21 | INFO     | root | ============================================================
+2026-03-31 10:09:21 | INFO     | root | LOGGING INITIALIZED
+2026-03-31 10:09:21 | INFO     | root | LOG FILE: D:\Researcher\Frontend\logs\app.log
+2026-03-31 10:09:21 | INFO     | root | ============================================================
+2026-03-31 10:09:21 | INFO     | Frontend.server | Importing Backend modules...
+2026-03-31 10:09:28 | INFO     | Backend.Services.GraphNodes | [GraphNodes] Module loading...
+2026-03-31 10:09:28 | INFO     | Backend.Services.GraphNodes | [GraphNodes] .env loaded from: D:\Researcher\Backend\Services\.env
+2026-03-31 10:09:28 | INFO     | Backend.Services.GraphNodes | [GraphNodes] Module ready ✓
+2026-03-31 10:09:29 | INFO     | Backend.Services.Agent_Utils | [Agent_Utils] Module loading...
+2026-03-31 10:09:29 | INFO     | Backend.Services.Agent_Utils | [Agent_Utils] .env loaded from: D:\Researcher\Backend\Services\.env
+2026-03-31 10:09:29 | INFO     | Backend.Services.Agent_Utils | [Agent_Utils] Vector store dir: D:\Researcher\Backend\vector_datastore
+2026-03-31 10:09:29 | INFO     | Frontend.server | All imports complete.
+2026-03-31 10:09:29 | INFO     | uvicorn.error | Started server process [12760]
+2026-03-31 10:09:29 | INFO     | uvicorn.error | Waiting for application startup.
+2026-03-31 10:09:29 | INFO     | Frontend.server | ============================================================
+2026-03-31 10:09:29 | INFO     | Frontend.server | SERVER STARTING UP
+2026-03-31 10:09:29 | INFO     | Frontend.server | Mode : General
+2026-03-31 10:09:29 | INFO     | Frontend.server | Model: mistral-medium-latest
+2026-03-31 10:09:29 | INFO     | Frontend.server | ============================================================
+2026-03-31 10:09:29 | INFO     | uvicorn.error | Application startup complete.
+2026-03-31 10:09:58 | INFO     | Frontend.server | >>> GET /favicon.ico
+2026-03-31 10:09:58 | INFO     | Frontend.server | <<< GET /favicon.ico -> 404
+2026-03-31 10:09:58 | INFO     | uvicorn.access | 127.0.0.1:51362 - "GET /favicon.ico HTTP/1.1" 404
+2026-03-31 10:10:18 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:10:18 | INFO     | Frontend.server | ========================================
+2026-03-31 10:10:18 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:10:18 | INFO     | Frontend.server | [/api/chat] Message : 'hello'
+2026-03-31 10:10:18 | INFO     | Frontend.server | [/api/chat] Mode    : General
+2026-03-31 10:10:18 | INFO     | Frontend.server | [/api/chat] FileType: text
+2026-03-31 10:10:18 | INFO     | Frontend.server | ========================================
+2026-03-31 10:10:18 | INFO     | Frontend.server | [Agent Factory] Creating Agent: model=mistral-medium-latest, role=General, has_document=False
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Initializing Agent
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] model=mistral-medium-latest | role=General | has_document=False
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Mistral API Key detected ✓
+2026-03-31 10:10:18 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating embedding model (mistral-embed)...
+2026-03-31 10:10:21 | DEBUG    | httpcore.connection | connect_tcp.started host='huggingface.co' port=443 local_address=None timeout=10 socket_options=None
+2026-03-31 10:10:21 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08D975DC0>
+2026-03-31 10:10:21 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08DDCC5D0> server_hostname='huggingface.co' timeout=10
+2026-03-31 10:10:21 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DABDB50>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 307, b'Temporary Redirect', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'264'), (b'Connection', b'keep-alive'), (b'Date', b'Tue, 31 Mar 2026 04:40:21 GMT'), (b'Location', b'/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json?%2Fmistralai%2FMixtral-8x7B-v0.1%2Fresolve%2Fmain%2Ftokenizer.json=&etag=%2243e6daf936dc0f953cb867ec864adab78f92d9ce%22'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69cb5035-25a4b2dd1fa277963afa0abe;690d592c-abea-43bf-b9cf-6f6f10f31ccc'), (b'RateLimit', b'"resolvers";r=4999;t=21'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Vary', b'Origin, Accept'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'HIT'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'X-Linked-ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Cache', b'Miss from cloudfront'), (b'Via', b'1.1 0e64ecf162e6c81dc537e18db119bd0c.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'v9AsFT9K33LDGEGczFc6C0Wt1JhgfEkVCu930bVEUOcZPIpiKj4y7w==')])
+2026-03-31 10:10:21 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/mistralai/Mixtral-8x7B-v0.1/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'1795303'), (b'Connection', b'keep-alive'), (b'Date', b'Mon, 16 Mar 2026 10:11:31 GMT'), (b'ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69b7d753-445102976ad23dae43119409;e847dd1c-73f4-434c-9239-b6d1920989ca'), (b'RateLimit', b'"resolvers";r=4998;t=251'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'MISS'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'Vary', b'Origin'), (b'X-Cache', b'Hit from cloudfront'), (b'Via', b'1.1 0e64ecf162e6c81dc537e18db119bd0c.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'yBrZRoRqS88IydMjOup0HSvp8TqbgL-dFPlx6RHxjWZ7h6rTsIYsKA=='), (b'Age', b'1276130')])
+2026-03-31 10:10:21 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json "HTTP/1.1 200 OK"
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:21 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:21 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Embedding model ready ✓
+2026-03-31 10:10:21 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating Chroma vector store at: D:\Researcher\Backend\vector_datastore
+2026-03-31 10:10:22 | DEBUG    | chromadb.config | Starting component System
+2026-03-31 10:10:22 | DEBUG    | chromadb.config | Starting component Posthog
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Vector store ready ✓
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating ResearchToolkit...
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Toolkit ready ✓
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Building LangGraph...
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Building graph for role=General, has_document=False
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Using GENERAL graph
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Graph built successfully ✓
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] AGENT READY ✓
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] role=General | model=mistral-medium-latest
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:22 | INFO     | Frontend.server | [Agent Factory] Agent created successfully
+2026-03-31 10:10:22 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=text
+2026-03-31 10:10:22 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:10:22 | INFO     | uvicorn.access | 127.0.0.1:51370 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:10:22 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : text
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : General
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'hello'
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: general
+2026-03-31 10:10:22 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:10:22 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:10:22 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7D550>
+2026-03-31 10:10:22 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:10:22 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7D460>
+2026-03-31 10:10:22 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:22 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:22 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:10:22 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:22 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:25 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:40:26 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4231-589f-716b-b265-51a6c6c65878'), (b'x-kong-request-id', b'019d4231-589f-716b-b265-51a6c6c65878'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49893'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2487465'), (b'x-ratelimit-tokens-query-cost', b'107'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'59'), (b'x-envoy-upstream-service-time', b'2430'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'2431'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=oNu1VwwyxmxovzgKyHiwep8EcpAb7UwmdZuitu4YtUk-1774932022.8228576-1.0.1.1-aG8yLEP2XbtPTN5WDGV39suYNbLEpQhc5sAKEEgVblMhUbPIZNUUuolk8s9mwhSLmey9z4gNMICvxlbw6uJqVlatImM9rQdVlTw7_u2NM5qivvS18BHkdzxUZmn7J9cZ; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:10:26 GMT'), (b'set-cookie', b'_cfuvid=G51UahFDB_VmhDUyxX0g3bYhTrA3oNSV0tXI0KnV1_g-1774932022.8228576-1.0.1.1-s3ufeh2e9hla_QAWONuL7SIaaOf1DX6VYMF3goIBOyM; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cacf6aff19a7b-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:10:25 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:10:25 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:10:25 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:25 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:25 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:25 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] START
+2026-03-31 10:10:25 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] tool_results=0 | queries=1
+2026-03-31 10:10:25 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] Invoking main LLM...
+2026-03-31 10:10:25 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:10:25 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F320>
+2026-03-31 10:10:25 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:10:26 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F230>
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:40:26 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4231-63e8-784a-a626-20050c1c746d'), (b'x-kong-request-id', b'019d4231-63e8-784a-a626-20050c1c746d'), (b'x-envoy-upstream-service-time', b'142'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'143'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=I.d4V7EMW.8UpiOnaqvD4KOhUV6zeQaqLWhuhV2cbGw-1774932026.2484505-1.0.1.1-PVKJJtNcfT02BjneTqV82gdYv5KPPOyqvSHzspks.j8hh5NTTIDRCDhqccZUH9usSyBFAQuVeVihYyZdeVdz3xE_ONvQ.Hs8DFfXfvZuXEj_eaSUAqFVx_guv9rajYdJ; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:10:26 GMT'), (b'set-cookie', b'_cfuvid=ffNTELHKYQDso7IXJlOdXFRQaavKwYbnKbiKhytMeT8-1774932026.2484505-1.0.1.1-N4cfg9lZAB_YEvsyovodLyeyWFKi_9IWYrLrjVc2iCc; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'CF-RAY', b'9e4cad0c0f819a8d-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:10:26 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:10:26 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:10:27 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:10:27 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:27 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:27 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] LLM done | 1.37s | 311 chars
+2026-03-31 10:10:27 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph finished | output=311 chars
+2026-03-31 10:10:27 | DEBUG    | Frontend.server | [/api/chat] Progress: 10 chunks | 300 chars
+2026-03-31 10:10:27 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Streamed 11 chunks ✓
+2026-03-31 10:10:27 | INFO     | Frontend.server | [/api/chat] COMPLETE: 11 chunks | 311 chars
+2026-03-31 10:10:45 | INFO     | Frontend.server | >>> POST /api/upload
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_part_begin with no data
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_field with data[42:61]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_value with data[63:115]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_end with no data
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_field with data[117:129]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_value with data[131:146]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_header_end with no data
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_headers_finished with no data
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_part_data with data[150:131072]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_part_data with data[0:20352]
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_part_end with no data
+2026-03-31 10:10:45 | DEBUG    | python_multipart.multipart | Calling on_end with no data
+2026-03-31 10:10:45 | INFO     | Frontend.server | [/api/upload] File: Fenil-Roadmap.pdf | Type: application/pdf
+2026-03-31 10:10:45 | INFO     | Frontend.server | [/api/upload] Processing PDF: Fenil-Roadmap.pdf
+2026-03-31 10:10:45 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] Processing PDF...
+2026-03-31 10:10:45 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] PDF has 8 pages
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | close.started
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | close.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | connect_tcp.started host='huggingface.co' port=443 local_address=None timeout=10 socket_options=None
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7C1D0>
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08DDCC5D0> server_hostname='huggingface.co' timeout=10
+2026-03-31 10:10:47 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7C380>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 307, b'Temporary Redirect', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'264'), (b'Connection', b'keep-alive'), (b'Date', b'Tue, 31 Mar 2026 04:40:47 GMT'), (b'Location', b'/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json?%2Fmistralai%2FMixtral-8x7B-v0.1%2Fresolve%2Fmain%2Ftokenizer.json=&etag=%2243e6daf936dc0f953cb867ec864adab78f92d9ce%22'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69cb504f-7860607600b7d743711ef585;f244a9a5-a942-4db6-8d58-ddfb24495322'), (b'RateLimit', b'"resolvers";r=4999;t=295'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Vary', b'Origin, Accept'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'HIT'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'X-Linked-ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Cache', b'Miss from cloudfront'), (b'Via', b'1.1 013e2c8e97fe02cfacd83184c2ba6796.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'yTESLxBiHrEteEyPCxuetHUtrnBwhUUer20mrucVoxU6iKyJvlLA4A==')])
+2026-03-31 10:10:47 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/mistralai/Mixtral-8x7B-v0.1/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'1795303'), (b'Connection', b'keep-alive'), (b'Date', b'Mon, 16 Mar 2026 10:11:31 GMT'), (b'ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69b7d753-445102976ad23dae43119409;e847dd1c-73f4-434c-9239-b6d1920989ca'), (b'RateLimit', b'"resolvers";r=4998;t=251'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'MISS'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'Vary', b'Origin'), (b'X-Cache', b'Hit from cloudfront'), (b'Via', b'1.1 013e2c8e97fe02cfacd83184c2ba6796.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'j9MbxptPrJyQMkQjDHlsCqOIrfS5ViEcXWbEhT9J1w1xZ4J0XunzEQ=='), (b'Age', b'1276156')])
+2026-03-31 10:10:47 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json "HTTP/1.1 200 OK"
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:47 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:49 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] Extracted 11553 characters
+2026-03-31 10:10:49 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] Split into 4 chunks
+2026-03-31 10:10:49 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] Embedding and storing chunks...
+2026-03-31 10:10:49 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:10:50 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE21880>
+2026-03-31 10:10:50 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08DAAA650> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:10:50 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE21700>
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:40:50 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4231-c1e9-7a1e-aa0b-ef93aa1f0610'), (b'x-kong-request-id', b'019d4231-c1e9-7a1e-aa0b-ef93aa1f0610'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19995640'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204962'), (b'x-ratelimit-tokens-query-cost', b'4360'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'58'), (b'x-envoy-upstream-service-time', b'208'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'209'), (b'x-kong-proxy-latency', b'14'), (b'set-cookie', b'__cf_bm=aPpu31XKTb2QQpNVMn9MqXsXOyzMCPs4J07chvmthLg-1774932050.3015087-1.0.1.1-Bq6wlM.sdRrL5QI87KVhywqOfp5ZF6d677B4BDKLQHY77rhKnJAcsjl8N5iopdxF1mbH_8zf4mPGASHPNBg3nvkin1ApOMg4t0P.g4IUndb1bh3FrOh9ZEDpv4NRUhOl; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:10:50 GMT'), (b'set-cookie', b'_cfuvid=TuP70GWOLsnfMKTzgpcQCmB.SWgxTyGJoOl36neEyms-1774932050.3015087-1.0.1.1-BnkJ2.rjC67yAJWDheRKdbu0MnQcXjpa0ZN_KP.sDnE; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cada26f238b09-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:10:50 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:10:50 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:10:51 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] Chunks stored ✓ | Rebuilding toolkit and graph...
+2026-03-31 10:10:51 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Building graph for role=General, has_document=True
+2026-03-31 10:10:51 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Using DOCUMENT graph (document uploaded)
+2026-03-31 10:10:51 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Graph built successfully ✓
+2026-03-31 10:10:51 | INFO     | Backend.Services.Agent_Utils | [Agent.convert_and_store_to_vect_db] DONE ✓ | 4 chunks stored | Switched to DOCUMENT graph
+2026-03-31 10:10:51 | INFO     | Frontend.server | [/api/upload] PDF stored successfully
+2026-03-31 10:10:51 | INFO     | Frontend.server | <<< POST /api/upload -> 200
+2026-03-31 10:10:51 | INFO     | uvicorn.access | 127.0.0.1:51371 - "POST /api/upload HTTP/1.1" 200
+2026-03-31 10:11:05 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:11:05 | INFO     | Frontend.server | ========================================
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] Message : 'tell me about the provided docs.'
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] Mode    : General
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] FileType: pdf
+2026-03-31 10:11:05 | INFO     | Frontend.server | ========================================
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=pdf
+2026-03-31 10:11:05 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:11:05 | INFO     | uvicorn.access | 127.0.0.1:51386 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:11:05 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : pdf
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : General
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'tell me about the provided docs.'
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: pdf
+2026-03-31 10:11:05 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:11:05 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:05 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F890>
+2026-03-31 10:11:05 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:06 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7FA40>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:06 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-003b-7485-96cb-7f0f46c4e450'), (b'x-kong-request-id', b'019d4232-003b-7485-96cb-7f0f46c4e450'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49780'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2487352'), (b'x-ratelimit-tokens-query-cost', b'113'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'57'), (b'x-envoy-upstream-service-time', b'226'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'227'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=eoUN9L6QKudAuk50nhATA2XRTR.UZGDOrJ6kRl0POaY-1774932066.2499776-1.0.1.1-c.KcyU9Qm3kuwp_2InHNDrXDMtxaBeGeIlU_8Q78F9ptBgnDWpbCGJx6_tqow_WGDde_19JHx0xZV2C4RXRew4GYbZZXDV.5xdZiaWr73zL_Cg__EbLo4WPr9TBNH2Uj; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:11:06 GMT'), (b'set-cookie', b'_cfuvid=X8AHRXvYMEc7QA3WAy45Z213BI7lgtXh5ZMQMrpHLJE-1774932066.2499776-1.0.1.1-AmJ2f7SXM31ZTdIijGnGN5nKdhw4SuBaYJL_7dPUYvI; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cae060ffd70aa-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:06 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:06 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] START
+2026-03-31 10:11:06 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] tool_results=0 | queries=1
+2026-03-31 10:11:06 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] Invoking main LLM...
+2026-03-31 10:11:06 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:06 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE28B30>
+2026-03-31 10:11:06 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:06 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE287D0>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:06 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:07 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:07 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-0344-788c-8575-102e06e0ebc5'), (b'x-kong-request-id', b'019d4232-0344-788c-8575-102e06e0ebc5'), (b'x-envoy-upstream-service-time', b'178'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'180'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=dE0CNMQkthEXuuazH47Qh97fdQCwg6sfGvynaPgiE14-1774932067.0331545-1.0.1.1-VU8YVAoyUwpRqEia3CF84x3cpGpNjTzrLbeLACCIdQMVFpSqgNylQD1jkACTCCRVwi9sj1r.qKA0TbkusZcngK1OVQm7T6iEuIJV9soclZZrXSQ8V1eZ1ANYPj.6PHtZ; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:11:07 GMT'), (b'set-cookie', b'_cfuvid=tBp6kAeZ1QA1iD7vuSJOFd9N1zea.VO2hKWyvX_.RJ0-1774932067.0331545-1.0.1.1-ht19bVbxj2jCG3jd50HF.2xaXISHCYKH9DyTdvOxM1g; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'CF-RAY', b'9e4cae0afdeb9a7d-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:07 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:11:07 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:23 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:11:23 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:23 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:23 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] LLM done | 16.96s | 4746 chars
+2026-03-31 10:11:23 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph finished | output=4746 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 10 chunks | 300 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 20 chunks | 600 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 30 chunks | 900 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 40 chunks | 1200 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 50 chunks | 1500 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 60 chunks | 1800 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 70 chunks | 2100 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 80 chunks | 2400 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 90 chunks | 2700 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 100 chunks | 3000 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 110 chunks | 3300 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 120 chunks | 3600 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 130 chunks | 3900 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 140 chunks | 4200 chars
+2026-03-31 10:11:23 | DEBUG    | Frontend.server | [/api/chat] Progress: 150 chunks | 4500 chars
+2026-03-31 10:11:23 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Streamed 159 chunks ✓
+2026-03-31 10:11:23 | INFO     | Frontend.server | [/api/chat] COMPLETE: 159 chunks | 4746 chars
+2026-03-31 10:11:50 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:11:50 | INFO     | Frontend.server | ========================================
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] Message : 'what does the provided document contain.'
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] Mode    : General
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] FileType: pdf
+2026-03-31 10:11:50 | INFO     | Frontend.server | ========================================
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=pdf
+2026-03-31 10:11:50 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:11:50 | INFO     | uvicorn.access | 127.0.0.1:51388 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:11:50 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : pdf
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : General
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'what does the provided document contain.'
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: pdf
+2026-03-31 10:11:50 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F8F0>
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F890>
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:51 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-adc7-7593-b463-f849b43954fe'), (b'x-kong-request-id', b'019d4232-adc7-7593-b463-f849b43954fe'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49759'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2487239'), (b'x-ratelimit-tokens-query-cost', b'113'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'58'), (b'x-envoy-upstream-service-time', b'177'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'177'), (b'x-kong-proxy-latency', b'8'), (b'set-cookie', b'__cf_bm=WM7MBIkRAhyzcJoTD1pknH6LEbf6Ou._yr.HDdhc.jQ-1774932110.7007031-1.0.1.1-rF_r4phIIXW9nhJRVTabLkggKSej8nYA2Kwbln_r9hqeULy.n9HT_iwXsuBC6GGWBAaYhBRFdYQMp4gnqCMDBMwDjiPlF6vXTy.ZYhOu3KMmD9GeIiBYh2no1mtLBWSB; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:11:51 GMT'), (b'set-cookie', b'_cfuvid=_PZgboc7f8ry0ZJSF_EasxGYyb_ZlXGAZ5vRHiMVzL0-1774932110.7007031-1.0.1.1-gv9_Pp9lp8lKSj6hsQj7.vGlRVZbT9Byyrtd.WKwcOM; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf1bef138827-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:50 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:50 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:50 | INFO     | Backend.Services.GraphNodes | [ContextExtractor] Document detected, extracting context sample...
+2026-03-31 10:11:50 | INFO     | PRINT | Document-retrieval-tool accessed with queries: ['what does the provided document contain.', 'overview', 'introduction']
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | close.started
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | close.complete
+2026-03-31 10:11:50 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:51 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DD25FA0>
+2026-03-31 10:11:51 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08DAAA650> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:51 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7D610>
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:51 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-aff7-728b-b785-3a92439c04f9'), (b'x-kong-request-id', b'019d4232-aff7-728b-b785-3a92439c04f9'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19995706'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204953'), (b'x-ratelimit-tokens-query-cost', b'9'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'57'), (b'x-envoy-upstream-service-time', b'308'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'309'), (b'x-kong-proxy-latency', b'8'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf1f59139a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:51 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:51 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:52 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-b3ab-7497-93db-be25789f31ae'), (b'x-kong-request-id', b'019d4232-b3ab-7497-93db-be25789f31ae'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19995755'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204950'), (b'x-ratelimit-tokens-query-cost', b'3'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'56'), (b'x-envoy-upstream-service-time', b'71'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'71'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf254a869a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:52 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:52 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:53 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-b639-7658-89f7-e486275c825e'), (b'x-kong-request-id', b'019d4232-b639-7658-89f7-e486275c825e'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19995799'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204947'), (b'x-ratelimit-tokens-query-cost', b'3'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'55'), (b'x-envoy-upstream-service-time', b'76'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'77'), (b'x-kong-proxy-latency', b'13'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf2958949a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:53 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:53 | INFO     | Backend.Services.GraphNodes | [ContextExtractor] Extracted 3003 chars in 2.34s
+2026-03-31 10:11:53 | INFO     | Backend.Services.GraphNodes | [QuerySynthesizer] START - Document context available, generating 10 targeted queries
+2026-03-31 10:11:53 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:53 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8F440>
+2026-03-31 10:11:53 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:53 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8F470>
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:53 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:54 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-b90f-7b90-b9c3-2d6423b2e24b'), (b'x-kong-request-id', b'019d4232-b90f-7b90-b9c3-2d6423b2e24b'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'48476'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2485942'), (b'x-ratelimit-tokens-query-cost', b'1297'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'54'), (b'x-envoy-upstream-service-time', b'1056'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'1058'), (b'x-kong-proxy-latency', b'7'), (b'set-cookie', b'__cf_bm=g6oXQLJfXzd3Fxtcu9HXpoRCJhuboAWvkZ4I9NIvU58-1774932113.588581-1.0.1.1-raE5N7APEBjaeFwZ1GRC6Fi_Fnb6KuqKn9M7NfQcaR1kp0N7YjORkimdHIT5tviWjehRDhxUrYBRXSesIF2Vv1gRnCa59mBPOovO2E7lAi.RC89QAkcx6BSaD83FPxvd; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:11:54 GMT'), (b'set-cookie', b'_cfuvid=qqHRrYu3erRn.ENlwTqK73if_n6Y7RVDJWQ_kOzFzaU-1774932113.588581-1.0.1.1-e00VJVGwZirOA0cIJ1LXWyH50TgHprKxYrNILMAaVbo; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf2de8f4fa1c-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:54 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:54 | INFO     | Backend.Services.GraphNodes | [QuerySynthesizer] 1.33s | 10 queries generated (expected: 10)
+2026-03-31 10:11:54 | INFO     | Backend.Services.GraphNodes |   Sample 1: What are the expected outcomes of structuring backend applications with middlewa...
+2026-03-31 10:11:54 | INFO     | Backend.Services.GraphNodes |   Sample 2: How does the document recommend securing sensitive data in backend applications?
+2026-03-31 10:11:54 | INFO     | Backend.Services.GraphNodes |   Sample 3: What caching strategies are discussed in the document for improving backend perf...
+2026-03-31 10:11:54 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:11:54 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE195E0>
+2026-03-31 10:11:54 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:11:54 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE18FE0>
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:54 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:55 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:55 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-be63-7f99-93b9-e03d422c652d'), (b'x-kong-request-id', b'019d4232-be63-7f99-93b9-e03d422c652d'), (b'x-envoy-upstream-service-time', b'143'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'144'), (b'x-kong-proxy-latency', b'11'), (b'set-cookie', b'__cf_bm=vhiLEyPaVOeJLnmeshryGJj_XoUkvrw1zudm2.rd1yU-1774932114.952162-1.0.1.1-bvsdwD1.hmnHy5wYKdVvuvOiI5HIUV0LuAbby.s9QeXPWng_FTDLMsOiM7hh9tc5FqTjs69RwHueUviB22_6TPb2TngINcJf464LyYA7VZI_BAtAcrnbLlL.j8jWVxdc; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:11:55 GMT'), (b'set-cookie', b'_cfuvid=TqRcbuREFXr8rdHRy4ALAMtSbJf8Ak5PhJiwNdHLTkw-1774932114.952162-1.0.1.1-CuQNLitl_tH4iVKdBJe0MXiP2U5CrWUj8g9yAnzxl3c; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'CF-RAY', b'9e4caf367e3f8b06-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:55 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:11:55 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:56 | INFO     | Backend.Services.GraphNodes | [ToolDecision] Decision: {'use_tool': True, 'tool': 'document', 'selected_queries': ['What are the expected outcomes of structuring backend applications with middleware as mentioned in the document?', 'How does the document recommend securing sensitive data in backend applications?', 'What caching strategies are discussed in the document for improving backend performance?', 'Explain the cache invalidation techniques mentioned in the document, such as TTL and write-through.', 'How does the document suggest integrating CDNs for static assets?']}
+2026-03-31 10:11:56 | INFO     | Backend.Services.GraphNodes | [ToolExecutor] START
+2026-03-31 10:11:56 | INFO     | Backend.Services.GraphNodes | [ToolExecutor] Tool=DocumentRetrieval | Queries=5
+2026-03-31 10:11:56 | INFO     | PRINT | Document-retrieval-tool accessed with queries: ['What are the expected outcomes of structuring backend applications with middleware as mentioned in the document?', 'How does the document recommend securing sensitive data in backend applications?', 'What caching strategies are discussed in the document for improving backend performance?', 'Explain the cache invalidation techniques mentioned in the document, such as TTL and write-through.', 'How does the document suggest integrating CDNs for static assets?']
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:56 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-c467-74b2-a59a-7320e35c31ad'), (b'x-kong-request-id', b'019d4232-c467-74b2-a59a-7320e35c31ad'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19996042'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204926'), (b'x-ratelimit-tokens-query-cost', b'21'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'53'), (b'x-envoy-upstream-service-time', b'69'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'70'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf401b0d9a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:56 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:11:56 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:11:57 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:41:57 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-c6ed-7094-997f-24935ddeeffd'), (b'x-kong-request-id', b'019d4232-c6ed-7094-997f-24935ddeeffd'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19996073'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204911'), (b'x-ratelimit-tokens-query-cost', b'15'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'52'), (b'x-envoy-upstream-service-time', b'61'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'62'), (b'x-kong-proxy-latency', b'7'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf44192a9a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:11:57 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:11:57 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:42:01 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-d7ae-7427-9c03-021e7401050a'), (b'x-kong-request-id', b'019d4232-d7ae-7427-9c03-021e7401050a'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19996380'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204895'), (b'x-ratelimit-tokens-query-cost', b'16'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'51'), (b'x-envoy-upstream-service-time', b'209'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'210'), (b'x-kong-proxy-latency', b'12'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf5eea1c9a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:12:01 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:12:01 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:42:02 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-dac4-7355-881d-133e13a7c8aa'), (b'x-kong-request-id', b'019d4232-dac4-7355-881d-133e13a7c8aa'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19996404'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204872'), (b'x-ratelimit-tokens-query-cost', b'23'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'50'), (b'x-envoy-upstream-service-time', b'70'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'71'), (b'x-kong-proxy-latency', b'11'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf63d8fd9a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:12:02 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:12:02 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:42:03 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-dd5c-708e-b74a-734affcbcccb'), (b'x-kong-request-id', b'019d4232-dd5c-708e-b74a-734affcbcccb'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19996437'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204857'), (b'x-ratelimit-tokens-query-cost', b'15'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'49'), (b'x-envoy-upstream-service-time', b'67'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'68'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4caf67ff369a84-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:12:03 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:12:03 | INFO     | Backend.Services.GraphNodes | [DocumentRetrieval] 7.05s | batch=5
+2026-03-31 10:12:03 | INFO     | Backend.Services.GraphNodes | [ToolExecutor] DONE | 1 results collected
+2026-03-31 10:12:03 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] START
+2026-03-31 10:12:03 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] tool_results=1 | queries=10
+2026-03-31 10:12:03 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] Invoking main LLM...
+2026-03-31 10:12:03 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:12:03 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE1AB70>
+2026-03-31 10:12:03 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:12:03 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DF981D0>
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:12:03 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:12:04 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:42:04 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4232-e054-7d29-a2ff-18e6a99614ee'), (b'x-kong-request-id', b'019d4232-e054-7d29-a2ff-18e6a99614ee'), (b'x-envoy-upstream-service-time', b'466'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'466'), (b'x-kong-proxy-latency', b'10'), (b'set-cookie', b'__cf_bm=GQ3lkJEcYaxzJ6ch5p5t5x89mUx4pXqo2u.FMqjY8mU-1774932123.625528-1.0.1.1-ex3AUP3DCFCV02ENQotUvocCwupSakegfDy9FjJ.rfdOVerIBOb_JaIz1POvLtuep2NKZHyvJCrh.hRmZMs1ny_hoJEpI4qo12PHzEbUPIP8M0lJSNbXBgKD4ABqS_yJ; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:12:04 GMT'), (b'set-cookie', b'_cfuvid=7_upQxiki_r.Mt_6kzHns7Eiz7QcTaK6GxjNW29hHww-1774932123.625528-1.0.1.1-jIyx5FOE7DsiFoS7ZjNRBRNMByj7Ksyz38MHESvOSuw; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'CF-RAY', b'9e4caf6ca8c71d31-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:12:04 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:12:04 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:13:01 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:13:01 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:13:01 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:13:02 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] LLM done | 58.67s | 13032 chars
+2026-03-31 10:13:02 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph finished | output=13032 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 10 chunks | 300 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 20 chunks | 600 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 30 chunks | 900 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 40 chunks | 1200 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 50 chunks | 1500 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 60 chunks | 1800 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 70 chunks | 2100 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 80 chunks | 2400 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 90 chunks | 2700 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 100 chunks | 3000 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 110 chunks | 3300 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 120 chunks | 3600 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 130 chunks | 3900 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 140 chunks | 4200 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 150 chunks | 4500 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 160 chunks | 4800 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 170 chunks | 5100 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 180 chunks | 5400 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 190 chunks | 5700 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 200 chunks | 6000 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 210 chunks | 6300 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 220 chunks | 6600 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 230 chunks | 6900 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 240 chunks | 7200 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 250 chunks | 7500 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 260 chunks | 7800 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 270 chunks | 8100 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 280 chunks | 8400 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 290 chunks | 8700 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 300 chunks | 9000 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 310 chunks | 9300 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 320 chunks | 9600 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 330 chunks | 9900 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 340 chunks | 10200 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 350 chunks | 10500 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 360 chunks | 10800 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 370 chunks | 11100 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 380 chunks | 11400 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 390 chunks | 11700 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 400 chunks | 12000 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 410 chunks | 12300 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 420 chunks | 12600 chars
+2026-03-31 10:13:02 | DEBUG    | Frontend.server | [/api/chat] Progress: 430 chunks | 12900 chars
+2026-03-31 10:13:02 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Streamed 435 chunks ✓
+2026-03-31 10:13:02 | INFO     | Frontend.server | [/api/chat] COMPLETE: 435 chunks | 13032 chars
+2026-03-31 10:13:33 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:13:33 | INFO     | Frontend.server | ========================================
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] Message : 'hello'
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] Mode    : General
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] FileType: pdf
+2026-03-31 10:13:33 | INFO     | Frontend.server | ========================================
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=pdf
+2026-03-31 10:13:33 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:13:33 | INFO     | uvicorn.access | 127.0.0.1:51412 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:13:33 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : pdf
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : General
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'hello'
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: pdf
+2026-03-31 10:13:33 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:13:33 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:13:33 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE181A0>
+2026-03-31 10:13:33 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:13:33 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DD265D0>
+2026-03-31 10:13:33 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:33 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:13:33 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:13:33 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:13:33 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:43:34 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4234-41e1-7229-8de6-fdf781e35397'), (b'x-kong-request-id', b'019d4234-41e1-7229-8de6-fdf781e35397'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49957'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2485899'), (b'x-ratelimit-tokens-query-cost', b'43'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'59'), (b'x-envoy-upstream-service-time', b'142'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'143'), (b'x-kong-proxy-latency', b'10'), (b'set-cookie', b'__cf_bm=sICZE8B7VxiRNjpfm1d6NhdxWNguYH.N0vtTlc0DDOw-1774932214.1449528-1.0.1.1-Fphdn.Vn635XYeL6xwYKaARzhNk9kpB5JkKzoQ87HvNf9iBfwxz0QZa7igjNhZWFMcI6._ftbc0Z0V0.OGwlNz4MNjEr64h_7_DwW_FF4jW44ybFgm5.nbsRmhvqA2o0; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:13:34 GMT'), (b'set-cookie', b'_cfuvid=0Y6vYZ1zBrkVNnb2DnO2XFkxorm47Wdf1MaAa4sSHUg-1774932214.1449528-1.0.1.1-w5ncxDf_spLMXt3q518DrpYCB1URzdJG5J2n.2RpECA; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb1a269b934ca-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:13:34 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:13:34 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] START
+2026-03-31 10:13:34 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] tool_results=0 | queries=1
+2026-03-31 10:13:34 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] Invoking main LLM...
+2026-03-31 10:13:34 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:13:34 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE23A40>
+2026-03-31 10:13:34 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:13:34 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE219A0>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:43:34 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4234-437e-770c-9a12-a73f5b5a6c6a'), (b'x-kong-request-id', b'019d4234-437e-770c-9a12-a73f5b5a6c6a'), (b'x-envoy-upstream-service-time', b'119'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'119'), (b'x-kong-proxy-latency', b'9'), (b'set-cookie', b'__cf_bm=RhfnMpMAtxzxDxH9WyOZAPzB1sTEn2ZD7mprtc4fD1o-1774932214.563016-1.0.1.1-GXkNIUczFxZgkl8zf0ZO.QapLDdWuv55Kc27Yc1VECNu5bzZarDDpSnSppLqrHwtklBg2bjUJ8Z5yISGYQD5sws.ZmRM0aQuhUMb1BrKRT0MpmbPr0k.qnZOyLAohi2y; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:13:34 GMT'), (b'set-cookie', b'_cfuvid=9phGQoqJ6IVFmtjRB4VBOfCFLAzDV_Zw4y3Va9knnMU-1774932214.563016-1.0.1.1-L1tFafueOcQhnsZauyHuDxLUYcuiDuisf6opzOX_Bxk; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'CF-RAY', b'9e4cb1a50f23fa1c-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:13:34 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:13:34 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:13:35 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:13:35 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:13:35 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:13:35 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] LLM done | 1.11s | 288 chars
+2026-03-31 10:13:35 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph finished | output=288 chars
+2026-03-31 10:13:35 | DEBUG    | Frontend.server | [/api/chat] Progress: 10 chunks | 288 chars
+2026-03-31 10:13:35 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Streamed 10 chunks ✓
+2026-03-31 10:13:35 | INFO     | Frontend.server | [/api/chat] COMPLETE: 10 chunks | 288 chars
+2026-03-31 10:13:42 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:13:42 | INFO     | Frontend.server | ========================================
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] Message : 'how do you do'
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] Mode    : General
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] FileType: pdf
+2026-03-31 10:13:42 | INFO     | Frontend.server | ========================================
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=pdf
+2026-03-31 10:13:42 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:13:42 | INFO     | uvicorn.access | 127.0.0.1:51414 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:13:42 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : pdf
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : General
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'how do you do'
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: pdf
+2026-03-31 10:13:42 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:13:42 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:13:42 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE19550>
+2026-03-31 10:13:42 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:13:42 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE18260>
+2026-03-31 10:13:42 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:42 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:13:42 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:13:42 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:13:42 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:43:43 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4234-64fa-7784-9c57-1bfa87deee86'), (b'x-kong-request-id', b'019d4234-64fa-7784-9c57-1bfa87deee86'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49847'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2485789'), (b'x-ratelimit-tokens-query-cost', b'110'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'58'), (b'x-envoy-upstream-service-time', b'159'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'160'), (b'x-kong-proxy-latency', b'11'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=Tg6uLqBhVK8ciOp3fW8FJvSodM_HURdU82805gnKwTA-1774932222.622943-1.0.1.1-oQQDIMorC0NzR8Co2_YuEKxI643vNnRFQ4HagzoISXf5c7js1LCxc6uzSnMTU_bc9JkK9nNABuNXF4AFtt3P3nEpyoVLm30HMgUa6sdN9s1aBArzouIRNLLnNrckLTKl; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:13:43 GMT'), (b'set-cookie', b'_cfuvid=8qxdXu5v_.sNRhGQdDcCOv0nYwsBHNUnY9TumzrsPes-1774932222.622943-1.0.1.1-7SeTYrZv8VdY.lOV4L0QVQOMRTcuH51LIJN_2pQsGnA; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb1d7692afa1c-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:13:43 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:13:43 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] START
+2026-03-31 10:13:43 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] tool_results=0 | queries=1
+2026-03-31 10:13:43 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] Invoking main LLM...
+2026-03-31 10:13:43 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:13:43 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8C650>
+2026-03-31 10:13:43 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:13:43 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8E420>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:43:44 GMT'), (b'Content-Type', b'text/event-stream; charset=utf-8'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4234-673c-78bf-a08b-92f836a75c61'), (b'x-kong-request-id', b'019d4234-673c-78bf-a08b-92f836a75c61'), (b'x-envoy-upstream-service-time', b'98'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'99'), (b'x-kong-proxy-latency', b'28'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=zVBiRZjZ7L85bF8VdWEJXACcC0kM1uxqs_RBNU4ZI1Y-1774932223.704325-1.0.1.1-o7s9f.gfBkDJY_HfPPcA0GgCIVnFZPXSvA3oCocdjFh5nc6lSDHIXpCevhhfuoDJ.mz3b82dv77Z6pnSOrCK07fHvO88pqupOOw25CeyySD2VYyv4T7vtP7tz5WeRKwF; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:13:44 GMT'), (b'set-cookie', b'_cfuvid=GVKX5gW9iUuYDUwAaE9jOr6vrokggxONJvjPWaZYn.g-1774932223.704325-1.0.1.1-_kGRVw.ED1NKkjJLa.uT5XFjRj21wynLRPGyoIOSy1s; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'CF-RAY', b'9e4cb1de2b0e70aa-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:13:43 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:13:43 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:13:45 | DEBUG    | httpcore.http11 | receive_response_body.failed exception=GeneratorExit()
+2026-03-31 10:13:45 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:13:45 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:13:45 | INFO     | Backend.Services.GraphNodes | [GenerateOutput] LLM done | 2.55s | 368 chars
+2026-03-31 10:13:45 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph finished | output=368 chars
+2026-03-31 10:13:46 | DEBUG    | Frontend.server | [/api/chat] Progress: 10 chunks | 300 chars
+2026-03-31 10:13:46 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Streamed 13 chunks ✓
+2026-03-31 10:13:46 | INFO     | Frontend.server | [/api/chat] COMPLETE: 13 chunks | 368 chars
+2026-03-31 10:13:51 | INFO     | Frontend.server | >>> POST /api/config
+2026-03-31 10:13:51 | INFO     | Frontend.server | [/api/config] Received: {'model': 'mistral-medium-latest', 'mode': 'Research'}
+2026-03-31 10:13:51 | INFO     | Frontend.server | [/api/config] Updated → model=mistral-medium-latest, mode=Research
+2026-03-31 10:13:51 | INFO     | Frontend.server | <<< POST /api/config -> 200
+2026-03-31 10:13:51 | INFO     | uvicorn.access | 127.0.0.1:51423 - "POST /api/config HTTP/1.1" 200
+2026-03-31 10:14:49 | INFO     | Frontend.server | >>> POST /api/chat
+2026-03-31 10:14:49 | INFO     | Frontend.server | ========================================
+2026-03-31 10:14:49 | INFO     | Frontend.server | [/api/chat] CHAT REQUEST RECEIVED
+2026-03-31 10:14:49 | INFO     | Frontend.server | [/api/chat] Message : 'in the provided document i feel the middle ware section is less informative can you please generate deep insights about ...'
+2026-03-31 10:14:49 | INFO     | Frontend.server | [/api/chat] Mode    : Research
+2026-03-31 10:14:49 | INFO     | Frontend.server | [/api/chat] FileType: pdf
+2026-03-31 10:14:49 | INFO     | Frontend.server | ========================================
+2026-03-31 10:14:49 | INFO     | Frontend.server | [Agent Factory] Creating Agent: model=mistral-medium-latest, role=Research, has_document=True
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Initializing Agent
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] model=mistral-medium-latest | role=Research | has_document=True
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Mistral API Key detected ✓
+2026-03-31 10:14:49 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating embedding model (mistral-embed)...
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | close.started
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | close.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | connect_tcp.started host='huggingface.co' port=443 local_address=None timeout=10 socket_options=None
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8FB00>
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08DDCC5D0> server_hostname='huggingface.co' timeout=10
+2026-03-31 10:14:51 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8EB70>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 307, b'Temporary Redirect', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'264'), (b'Connection', b'keep-alive'), (b'Date', b'Tue, 31 Mar 2026 04:44:51 GMT'), (b'Location', b'/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json?%2Fmistralai%2FMixtral-8x7B-v0.1%2Fresolve%2Fmain%2Ftokenizer.json=&etag=%2243e6daf936dc0f953cb867ec864adab78f92d9ce%22'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69cb5143-7453419b300d8ff72b9bc4ec;3dcc73e3-b5d0-4d0e-8ee6-08e1a0b1de70'), (b'RateLimit', b'"resolvers";r=4998;t=51'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Vary', b'Origin, Accept'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'HIT'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'X-Linked-ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Cache', b'Miss from cloudfront'), (b'Via', b'1.1 eca5969248a65c16b067910513e714e8.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'O4WA6dj-kj2pnxgzL_5nN-SRVwuUYBs4-HMufrHDi_h-09lEoV6-Jg==')])
+2026-03-31 10:14:51 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/mistralai/Mixtral-8x7B-v0.1/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'text/plain; charset=utf-8'), (b'Content-Length', b'1795303'), (b'Connection', b'keep-alive'), (b'Date', b'Mon, 16 Mar 2026 10:11:31 GMT'), (b'ETag', b'"43e6daf936dc0f953cb867ec864adab78f92d9ce"'), (b'X-Powered-By', b'huggingface-moon'), (b'X-Request-Id', b'Root=1-69b7d753-445102976ad23dae43119409;e847dd1c-73f4-434c-9239-b6d1920989ca'), (b'RateLimit', b'"resolvers";r=4998;t=251'), (b'RateLimit-Policy', b'"fixed window";"resolvers";q=5000;w=300'), (b'cross-origin-opener-policy', b'same-origin'), (b'Referrer-Policy', b'strict-origin-when-cross-origin'), (b'Access-Control-Max-Age', b'86400'), (b'Access-Control-Allow-Origin', b'https://huggingface.co'), (b'Access-Control-Expose-Headers', b'X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash'), (b'X-Repo-Commit', b'fc7ac94680e38d7348cfa806e51218e6273104b0'), (b'Accept-Ranges', b'bytes'), (b'X-Hub-Cache', b'MISS'), (b'Content-Disposition', b'inline; filename*=UTF-8\'\'tokenizer.json; filename="tokenizer.json";'), (b'Content-Security-Policy', b"default-src 'none'; sandbox"), (b'Vary', b'Origin'), (b'X-Cache', b'Hit from cloudfront'), (b'Via', b'1.1 eca5969248a65c16b067910513e714e8.cloudfront.net (CloudFront)'), (b'X-Amz-Cf-Pop', b'BOM78-P10'), (b'X-Amz-Cf-Id', b'P4D02G47DBmBL3W603l_hIy-RFcsi3nMKXEII1MOshWHw2JxDlE_2g=='), (b'Age', b'1276401')])
+2026-03-31 10:14:51 | INFO     | httpx | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/mistralai/Mixtral-8x7B-v0.1/fc7ac94680e38d7348cfa806e51218e6273104b0/tokenizer.json "HTTP/1.1 200 OK"
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'HEAD']>
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:51 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Embedding model ready ✓
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating Chroma vector store at: D:\Researcher\Backend\vector_datastore
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Vector store ready ✓
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Creating ResearchToolkit...
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Toolkit ready ✓
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] Building LangGraph...
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Building graph for role=Research, has_document=True
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Using DOCUMENT graph (document uploaded)
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent._build_graph] Graph built successfully ✓
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] AGENT READY ✓
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.__init__] role=Research | model=mistral-medium-latest
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:52 | INFO     | Frontend.server | [Agent Factory] Agent created successfully
+2026-03-31 10:14:52 | INFO     | Frontend.server | [/api/chat] Invoking agent with file_type=pdf
+2026-03-31 10:14:52 | INFO     | Frontend.server | <<< POST /api/chat -> 200
+2026-03-31 10:14:52 | INFO     | uvicorn.access | 127.0.0.1:51424 - "POST /api/chat HTTP/1.1" 200
+2026-03-31 10:14:52 | INFO     | Frontend.server | [/api/chat] Stream generation started
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] START (STREAMING MODE)
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] input_type : pdf
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] agent_role : Research
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] query      : 'in the provided document i feel the middle ware section is less informative can you please generate ...'
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | ──────────────────────────────────────────────────
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Normalized input_type: pdf
+2026-03-31 10:14:52 | INFO     | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Invoking LangGraph...
+2026-03-31 10:14:52 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:14:52 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7DD30>
+2026-03-31 10:14:52 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:14:52 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7F0B0>
+2026-03-31 10:14:52 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:52 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:52 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:52 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:52 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:44:53 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-7532-7e06-a81f-667a5fb143a9'), (b'x-kong-request-id', b'019d4235-7532-7e06-a81f-667a5fb143a9'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'49765'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2485659'), (b'x-ratelimit-tokens-query-cost', b'130'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'58'), (b'x-envoy-upstream-service-time', b'164'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'164'), (b'x-kong-proxy-latency', b'9'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=Ajnjh4bYckJqnnHffeb2zJVO0gAp2U.So2cUGC1_Teg-1774932292.8184714-1.0.1.1-LMOHI5hKhTpJPZmbeHAFZAbl_VY4ADz.1OtuqczAYssMwiFi_rsdawKv4PYao.ilX94FMNWN0BM0KB4KIpvHpT85X4A0TkA2UAJQ4bZk0I.wnwq9.4pgUKCvv336gNAH; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:14:53 GMT'), (b'set-cookie', b'_cfuvid=GML4MxvlKb27Yins2IEbo_ezwGElyLf.zMhiDmXDKWU-1774932292.8184714-1.0.1.1-_4iVWSvO5UgkHjMuKKFii3cWBKtO.42a2lA6LErO7NM; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb38e1d6e288d-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:53 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:53 | INFO     | Backend.Services.GraphNodes | [ContextExtractor] Document detected, extracting context sample...
+2026-03-31 10:14:53 | INFO     | PRINT | Document-retrieval-tool accessed with queries: ['in the provided document i feel the middle ware section is less informative can you please generate deep insights about the middleware section.', 'overview', 'introduction']
+2026-03-31 10:14:53 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:14:53 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8CBF0>
+2026-03-31 10:14:53 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B08E4C0250> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:14:53 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE8D6A0>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:44:53 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-7825-77a2-9b58-cac73a7bffa8'), (b'x-kong-request-id', b'019d4235-7825-77a2-9b58-cac73a7bffa8'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19999972'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204829'), (b'x-ratelimit-tokens-query-cost', b'28'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'57'), (b'x-envoy-upstream-service-time', b'76'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'76'), (b'x-kong-proxy-latency', b'10'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=bWrFFiDtBy5Xo9_P.Ni3JvpDl7e52G1aoikO8nX7SBU-1774932293.5724866-1.0.1.1-U8.GnfKCheJTAQXEML9D5iNVQMhtCtEXfiFIF02WJWE0MCCYaPcmtrNkGk5qb0PB_17fx8rHoQrnINk7jCxV2m7.7UYRF.fNn9jXiQXVKdBb8HSQvUeigz.GqkGU5Xq4; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:14:53 GMT'), (b'set-cookie', b'_cfuvid=l.gvQCJKje.AGf7q8jtVONDHedtNwjwyUDYdCgeIzDU-1774932293.5724866-1.0.1.1-TENsFGtFHetsitrpbSn5rPFYPQYzmhOvGY3eAghM2nw; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb392d9ee9a81-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:53 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:14:53 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:44:54 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-7ae4-754d-ad64-1c45c289cdb4'), (b'x-kong-request-id', b'019d4235-7ae4-754d-ad64-1c45c289cdb4'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19999969'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204826'), (b'x-ratelimit-tokens-query-cost', b'3'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'56'), (b'x-envoy-upstream-service-time', b'69'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'70'), (b'x-kong-proxy-latency', b'8'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb39728989a81-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:54 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:54 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:44:55 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-7d92-7804-a417-348cf6332d86'), (b'x-kong-request-id', b'019d4235-7d92-7804-a417-348cf6332d86'), (b'x-ratelimit-limit-tokens-minute', b'20000000'), (b'x-ratelimit-remaining-tokens-minute', b'19999966'), (b'x-ratelimit-limit-tokens-month', b'200000000000'), (b'x-ratelimit-remaining-tokens-month', b'199999204823'), (b'x-ratelimit-tokens-query-cost', b'3'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'55'), (b'x-envoy-upstream-service-time', b'76'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'76'), (b'x-kong-proxy-latency', b'10'), (b'cf-cache-status', b'DYNAMIC'), (b'X-Content-Type-Options', b'nosniff'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb39b7ffa9a81-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:55 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/embeddings "HTTP/1.1 200 OK"
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:55 | INFO     | Backend.Services.GraphNodes | [ContextExtractor] Extracted 3003 chars in 2.28s
+2026-03-31 10:14:55 | INFO     | Backend.Services.GraphNodes | [QuerySynthesizer] START - Document context available, generating 10 targeted queries
+2026-03-31 10:14:55 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:14:55 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE7D640>
+2026-03-31 10:14:55 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:14:55 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DE1A7B0>
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:55 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 31 Mar 2026 04:44:56 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-8079-7749-b8e8-831fb2a862e5'), (b'x-kong-request-id', b'019d4235-8079-7749-b8e8-831fb2a862e5'), (b'x-ratelimit-limit-tokens-minute', b'50000'), (b'x-ratelimit-remaining-tokens-minute', b'48483'), (b'x-ratelimit-limit-tokens-month', b'4000000'), (b'x-ratelimit-remaining-tokens-month', b'2484367'), (b'x-ratelimit-tokens-query-cost', b'1292'), (b'x-ratelimit-limit-req-minute', b'60'), (b'x-ratelimit-remaining-req-minute', b'54'), (b'x-envoy-upstream-service-time', b'953'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'954'), (b'x-kong-proxy-latency', b'13'), (b'cf-cache-status', b'DYNAMIC'), (b'set-cookie', b'__cf_bm=Eiu7kp122cEhyf0ZFkhjhOXVckvHvA._Tfr.qCXE7Vk-1774932295.69754-1.0.1.1-Beb.Ng4Ecaqg16BE1n0PiUT9aq8V9x3EtuBmoA1DSoNRGJzPuK86HjO8HajMf0JFIKsbfaayoId4oK05YTmy5aDvxgurs..v0MWIkpKo_DQHmn7mUCFyIYda545J2Pjt; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:14:56 GMT'), (b'set-cookie', b'_cfuvid=UOhi86e9rp0unrz2lljyliSfIz6LUzRLS8oOrEALC8k-1774932295.69754-1.0.1.1-UItqRTDUzm2dCcNal7nFpkcq3kml5mMrvdt99yc_.v4; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'CF-RAY', b'9e4cb3a01fc19a7b-NAG'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:56 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:56 | INFO     | Backend.Services.GraphNodes | [QuerySynthesizer] 1.37s | 10 queries generated (expected: 10)
+2026-03-31 10:14:56 | INFO     | Backend.Services.GraphNodes |   Sample 1: What are the key aspects of structuring backend applications with middleware as ...
+2026-03-31 10:14:56 | INFO     | Backend.Services.GraphNodes |   Sample 2: How does the document recommend handling sensitive data with middleware?
+2026-03-31 10:14:56 | INFO     | Backend.Services.GraphNodes |   Sample 3: What are the expected outcomes of using middleware in backend applications accor...
+2026-03-31 10:14:56 | DEBUG    | httpcore.connection | connect_tcp.started host='api.mistral.ai' port=443 local_address=None timeout=120 socket_options=None
+2026-03-31 10:14:56 | DEBUG    | httpcore.connection | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DF9A2D0>
+2026-03-31 10:14:56 | DEBUG    | httpcore.connection | start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B082BBEBD0> server_hostname='api.mistral.ai' timeout=120
+2026-03-31 10:14:56 | DEBUG    | httpcore.connection | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B08DF9A150>
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | send_request_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | send_request_headers.complete
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | send_request_body.started request=<Request [b'POST']>
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | send_request_body.complete
+2026-03-31 10:14:56 | DEBUG    | httpcore.http11 | receive_response_headers.started request=<Request [b'POST']>
+2026-03-31 10:14:57 | DEBUG    | httpcore.http11 | receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 31 Mar 2026 04:44:57 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'166'), (b'Connection', b'keep-alive'), (b'mistral-correlation-id', b'019d4235-85c4-791c-b8ed-dffd2f472aa7'), (b'x-kong-request-id', b'019d4235-85c4-791c-b8ed-dffd2f472aa7'), (b'x-envoy-upstream-service-time', b'72'), (b'Server', b'cloudflare'), (b'access-control-allow-origin', b'*'), (b'x-kong-upstream-latency', b'73'), (b'x-kong-proxy-latency', b'9'), (b'set-cookie', b'__cf_bm=YwdBcoK3DY7O40e3fpDN2Gf7Nj1kn5zSrC6.YMrla1w-1774932297.0593853-1.0.1.1-CFjwkEsEbuzEWHuaHJvlmr_Clg.djCzhHWL8Zj8K1F53RrlkZ2YvLmqo6PdotPYbx7MYFLeXIaTmE836Z.Pg1PtxMrvmoSs_bE6HlDivUg6g8dH8V8C4IhA.MRUtMv0U; HttpOnly; Secure; Path=/; Domain=mistral.ai; Expires=Tue, 31 Mar 2026 05:14:57 GMT'), (b'set-cookie', b'_cfuvid=5kLNS.GKMNNvzxbHNhFLl_JZLvHQCGF4Jd3sYjAN4ZY-1774932297.0593853-1.0.1.1-M6Iuyghl3ZV08CO82nWkGDncx_JvUfTf7pN2ALKPHII; HttpOnly; SameSite=None; Secure; Path=/; Domain=mistral.ai'), (b'X-Content-Type-Options', b'nosniff'), (b'cf-cache-status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=15552000; includeSubDomains; preload'), (b'CF-RAY', b'9e4cb3a8991c89e1-BOM'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2026-03-31 10:14:57 | INFO     | httpx | HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-03-31 10:14:57 | DEBUG    | httpcore.http11 | receive_response_body.started request=<Request [b'POST']>
+2026-03-31 10:14:57 | DEBUG    | httpcore.http11 | receive_response_body.complete
+2026-03-31 10:14:57 | DEBUG    | httpcore.http11 | response_closed.started
+2026-03-31 10:14:57 | DEBUG    | httpcore.http11 | response_closed.complete
+2026-03-31 10:14:57 | ERROR    | Backend.Services.Agent_Utils | [Agent.Invoke_agent] Graph ERROR: Error response 429 while fetching https://api.mistral.ai/v1/chat/completions: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505","raw_status_code":429}
+Traceback (most recent call last):
+  File "D:\Researcher\Backend\Services\Agent_Utils.py", line 306, in Invoke_agent
+    final_state = self._graph.invoke(initial_state)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\pregel\main.py", line 3290, in invoke
+    for chunk in self.stream(
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\pregel\main.py", line 2724, in stream
+    for _ in runner.tick(
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\pregel\_runner.py", line 167, in tick
+    run_with_retry(
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\pregel\_retry.py", line 71, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\Backend\Services\GraphNodes.py", line 454, in tool_decision_node
+    response = model.invoke(prompt)
+               ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 402, in invoke
+    self.generate_prompt(
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1123, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 933, in generate
+    self._generate_with_cache(
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1192, in _generate_with_cache
+    for chunk in self._stream(messages, stop=stop, **kwargs):
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_mistralai\chat_models.py", line 722, in _stream
+    for chunk in self.completion_with_retry(
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_mistralai\chat_models.py", line 572, in iter_sse
+    _raise_on_error(event_source.response)
+  File "D:\Researcher\.venv\Lib\site-packages\langchain_mistralai\chat_models.py", line 186, in _raise_on_error
+    raise httpx.HTTPStatusError(
+httpx.HTTPStatusError: Error response 429 while fetching https://api.mistral.ai/v1/chat/completions: {"object":"error","message":"Service tier capacity exceeded for this model.","type":"service_tier_capacity_exceeded","param":null,"code":"3505","raw_status_code":429}
+During task with name 'tool_decision' and id '3f8c88da-1ccb-e9f2-9cc8-5789ba2347f2'
+2026-03-31 10:14:57 | INFO     | Frontend.server | [/api/chat] COMPLETE: 1 chunks | 281 chars
+2026-03-31 10:15:08 | INFO     | uvicorn.error | Shutting down
+2026-03-31 10:15:08 | INFO     | uvicorn.error | Waiting for application shutdown.
+2026-03-31 10:15:08 | INFO     | Frontend.server | ============================================================
+2026-03-31 10:15:08 | INFO     | Frontend.server | SERVER SHUTTING DOWN
+2026-03-31 10:15:08 | INFO     | Frontend.server | ============================================================
+2026-03-31 10:15:08 | INFO     | uvicorn.error | Application shutdown complete.
+2026-03-31 10:15:08 | INFO     | uvicorn.error | Finished server process [12760]
+2026-03-31 10:15:08 | DEBUG    | httpcore.connection | close.started
+2026-03-31 10:15:08 | DEBUG    | httpcore.connection | close.complete

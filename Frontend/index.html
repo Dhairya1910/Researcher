@@ -910,6 +910,46 @@
         letter-spacing: 0.03em;
       }
 
+      /* ── Execution Timer ── */
+      #execution-timer {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 8px 16px;
+        background: var(--accent-light);
+        border: 1px solid var(--accent);
+        border-radius: 12px;
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
+      }
+      #execution-timer.active {
+        display: flex;
+      }
+      .timer-icon {
+        width: 16px;
+        height: 16px;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.1); }
+      }
+      .timer-text {
+        font-weight: 500;
+        color: var(--accent-dark);
+        letter-spacing: 0.02em;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+      }
+      .timer-label {
+        color: var(--text-mid);
+        font-size: 0.75rem;
+      }
+
       /* ── Mobile sidebar ── */
       #sidebar-toggle {
         display: none;
@@ -1033,8 +1073,6 @@
             <option value="mistral-medium-latest">mistral-medium</option>
             <option value="mistral-small-latest">mistral-small</option>
             <option value="mistral-large-latest">mistral-large</option>
-            <option value="magistral-medium-latest">magistral-medium</option>
-            <option value="magistral-small-latest">magistral-small</option>
           </select>
         </div>
 
@@ -1189,6 +1227,16 @@
           <div class="input-hint">
             Enter to send &nbsp;·&nbsp; Shift+Enter for new line
           </div>
+          
+          <!-- Execution Timer -->
+          <div id="execution-timer">
+            <svg class="timer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span class="timer-label">Execution time:</span>
+            <span class="timer-text" id="timer-display">0.0s</span>
+          </div>
         </div>
       </main>
     </div>
@@ -1200,7 +1248,10 @@
    existing Agent/Middleware/Tools pipeline.
    ═══════════════════════════════════════════════════ */
 
-      const API_BASE_URL = "https://researcher-backend-21un.onrender.com";
+      // Use localhost for local development, production URL for deployed version
+      const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? `http://${window.location.hostname}:8000`
+        : "https://researcher-backend-21un.onrender.com";
 
       const state = {
         model: "mistral-medium-latest",
@@ -1208,6 +1259,8 @@
         messages: [],
         file: null,
         busy: false,
+        timerInterval: null,
+        timerStartTime: null,
       };
 
       // ── Mode switch ──
@@ -1222,15 +1275,15 @@
         document.getElementById("header-title").textContent = m + " Assistant";
 
         if (m === "Research") {
-          state.model = "magistral-medium-latest";
+          state.model = "mistral-medium-latest";
           document.getElementById("model-select").value =
-            "magistral-medium-latest";
+            "mistral-medium-latest";
           document.getElementById("model-pill-text").textContent =
-            "magistral-medium-latest";
+            "mistral-medium-latest";
           document.getElementById("header-sub").textContent =
             "Deep analysis · Extended reasoning";
           document.getElementById("mode-hint").textContent =
-            "Research mode uses magistral for thorough, cited analysis.";
+            "Research mode uses Mistral for thorough, cited analysis.";
         } else {
           document.getElementById("header-sub").textContent =
             "Calm, thoughtful, precise";
@@ -1402,6 +1455,55 @@
           .replace(/\n/g, "<br>");
       }
 
+      // ── Execution Timer Functions ──
+      function startTimer() {
+        // Clear any existing timer
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+        }
+        
+        state.timerStartTime = performance.now();
+        const timerElement = document.getElementById("execution-timer");
+        const timerDisplay = document.getElementById("timer-display");
+        
+        // Show timer
+        timerElement.classList.add("active");
+        
+        // Update timer every 100ms for smooth updates
+        state.timerInterval = setInterval(() => {
+          const elapsed = (performance.now() - state.timerStartTime) / 1000;
+          timerDisplay.textContent = elapsed.toFixed(1) + "s";
+        }, 100);
+      }
+
+      function stopTimer() {
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+        
+        // Calculate final time
+        if (state.timerStartTime) {
+          const finalTime = (performance.now() - state.timerStartTime) / 1000;
+          document.getElementById("timer-display").textContent = finalTime.toFixed(2) + "s";
+        }
+        
+        // Keep it visible for 3 seconds, then hide
+        setTimeout(() => {
+          document.getElementById("execution-timer").classList.remove("active");
+        }, 3000);
+      }
+
+      function resetTimer() {
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+        state.timerStartTime = null;
+        document.getElementById("execution-timer").classList.remove("active");
+        document.getElementById("timer-display").textContent = "0.0s";
+      }
+
       // ── Thinking indicator ──
       let thinkRow = null;
       function showThinking() {
@@ -1446,19 +1548,22 @@
         appendMsg("user", txt);
         showThinking();
 
-        const startTime = performance.now();
+        // Start execution timer
+        startTimer();
 
         try {
+          // Use faster batch processing instead of real-time for reliability
           const reply = await callBackendSSE(txt);
           hideThinking();
           state.messages.push({ role: "assistant", content: reply });
 
-          // Stream-style typewriter render
-          await streamBubble(reply);
-
-          const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
-          document.getElementById("status-text").textContent =
-            `Done · ${elapsed}s`;
+          // Fast display with minimal animation
+          await streamBubbleFast(reply);
+          
+          // Stop timer
+          stopTimer();
+          
+          document.getElementById("status-text").textContent = "Done";
         } catch (e) {
           hideThinking();
           appendMsg(
@@ -1466,6 +1571,9 @@
             "**Error:** " + (e.message || "Something went wrong."),
           );
           document.getElementById("status-text").textContent = "Error";
+          
+          // Stop timer on error
+          stopTimer();
         }
 
         state.busy = false;
@@ -1522,7 +1630,154 @@
         return fullText || "(empty response)";
       }
 
-      // ── Streaming typewriter ──
+      // ── Real-time streaming with smooth animation ──
+      async function callBackendStreamingRealtime(message) {
+        const res = await fetch(`${API_BASE_URL}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Server error ${res.status}: ${errText}`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        // Create AI message bubble for real-time streaming
+        const w = document.getElementById("welcome");
+        if (w) w.remove();
+        const s = document.getElementById("chat-scroll");
+        const ts = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const row = document.createElement("div");
+        row.className = "msg-row";
+        const bubbleId = "_realtime_bubble_" + Date.now();
+        row.innerHTML = `
+    <div class="msg-avatar av-ai">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="var(--accent-dark)">
+        <path d="M12 22V12M12 12C12 7 7 4 2 4c0 5 3 9 10 8M12 12c0-5 5-8 10-8-1 5-4 9-10 8"/>
+      </svg>
+    </div>
+    <div class="msg-wrap">
+      <div class="msg-meta"><span class="meta-name">Jarvis</span><span>${ts}</span></div>
+      <div class="msg-bubble bubble-ai" id="${bubbleId}"></div>
+    </div>`;
+        s.appendChild(row);
+        scrollEnd();
+
+        const bubble = document.getElementById(bubbleId);
+        let fullText = "";
+        let displayedText = "";
+        let animationQueue = [];
+        let isAnimating = false;
+
+        // Smooth animation function
+        const animateChunk = async (text) => {
+          const chunkSize = 3; // Display 3 characters at a time for smooth effect
+          const delay = 20; // 20ms between micro-chunks
+          
+          for (let i = 0; i < text.length; i += chunkSize) {
+            displayedText += text.substring(i, Math.min(i + chunkSize, text.length));
+            bubble.innerHTML = marked.parse(displayedText) + '<span class="cursor-blink"></span>';
+            scrollEnd();
+            await sleep(delay);
+          }
+        };
+
+        // Process animation queue
+        const processQueue = async () => {
+          if (isAnimating || animationQueue.length === 0) return;
+          
+          isAnimating = true;
+          while (animationQueue.length > 0) {
+            const chunk = animationQueue.shift();
+            await animateChunk(chunk);
+          }
+          isAnimating = false;
+        };
+
+        // Read stream and queue chunks for animation
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              try {
+                const payload = JSON.parse(line.slice(6));
+                if (payload.type === "chunk") {
+                  fullText += payload.content;
+                  animationQueue.push(payload.content);
+                  processQueue(); // Start processing if not already running
+                } else if (payload.type === "error") {
+                  throw new Error(payload.content);
+                }
+              } catch (parseErr) {
+                if (parseErr.message !== "Unexpected end of JSON input") {
+                  console.warn("SSE parse issue:", parseErr);
+                }
+              }
+            }
+          }
+        }
+
+        // Wait for animation to complete
+        while (isAnimating || animationQueue.length > 0) {
+          await sleep(50);
+          processQueue();
+        }
+
+        // Final render without cursor
+        bubble.innerHTML = marked.parse(fullText);
+        scrollEnd();
+
+        // Store in message history
+        state.messages.push({ role: "assistant", content: fullText });
+
+        return fullText;
+      }
+
+      // ── Fast streaming display (optimized for reliability) ──
+      async function streamBubbleFast(text) {
+        const w = document.getElementById("welcome");
+        if (w) w.remove();
+        const s = document.getElementById("chat-scroll");
+        const ts = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const row = document.createElement("div");
+        row.className = "msg-row";
+        const bubbleId = "_stream_bubble_" + Date.now();
+        row.innerHTML = `
+    <div class="msg-avatar av-ai">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="var(--accent-dark)"><path d="M12 22V12M12 12C12 7 7 4 2 4c0 5 3 9 10 8M12 12c0-5 5-8 10-8-1 5-4 9-10 8"/></svg>
+    </div>
+    <div class="msg-wrap">
+      <div class="msg-meta"><span class="meta-name">Jarvis</span><span>${ts}</span></div>
+      <div class="msg-bubble bubble-ai" id="${bubbleId}"></div>
+    </div>`;
+        s.appendChild(row);
+        scrollEnd();
+
+        const bubble = document.getElementById(bubbleId);
+        
+        // Instant display for reliability - users prefer speed over animation
+        bubble.innerHTML = marked.parse(text);
+        scrollEnd();
+      }
+
+      // ── Streaming typewriter (legacy - kept for reference) ──
       async function streamBubble(text) {
         const w = document.getElementById("welcome");
         if (w) w.remove();
@@ -1546,17 +1801,20 @@
         scrollEnd();
 
         const bubble = document.getElementById(bubbleId);
-        const words = text.split(" ");
-        const delay = Math.max(8, Math.min(30, 3000 / words.length));
-        let built = "";
+        
+        // Much faster streaming - display chunks instead of word-by-word
+        const chunkSize = 50; // Display 50 characters at a time
+        const delay = 15; // Only 15ms delay between chunks (much faster!)
+        let displayed = "";
 
-        for (let i = 0; i < words.length; i++) {
-          built += (i === 0 ? "" : " ") + words[i];
-          bubble.innerHTML =
-            marked.parse(built) + '<span class="cursor-blink"></span>';
+        for (let i = 0; i < text.length; i += chunkSize) {
+          displayed = text.substring(0, i + chunkSize);
+          bubble.innerHTML = marked.parse(displayed) + '<span class="cursor-blink"></span>';
           scrollEnd();
           await sleep(delay);
         }
+        
+        // Final render without cursor
         bubble.innerHTML = marked.parse(text);
         scrollEnd();
       }
