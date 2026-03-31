@@ -1109,6 +1109,53 @@
         opacity: 1;
       }
 
+      /* ── Download Buttons ── */
+      .download-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-soft);
+        align-items: center;
+      }
+      .download-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-family: var(--font-body);
+        font-weight: 500;
+      }
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        background: var(--accent-light);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-family: var(--font-body);
+        color: var(--accent-dark);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        text-decoration: none;
+      }
+      .download-btn:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+      }
+      .download-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+      }
+      .download-btn:active {
+        transform: translateY(0);
+      }
+
       /* ── Render Boot Popup ── */
       #render-popup-overlay {
         position: fixed;
@@ -2099,6 +2146,25 @@
     <div class="msg-wrap">
       <div class="msg-meta"><span class="meta-name">Jarvis</span><span>${ts}</span></div>
       <div class="msg-bubble bubble-ai" id="${bubbleId}"></div>
+      <div class="download-container">
+        <span class="download-label">Download:</span>
+        <button class="download-btn" onclick="downloadResponse('${bubbleId}', 'word')">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Word
+        </button>
+        <button class="download-btn" onclick="downloadResponse('${bubbleId}', 'pdf')">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          PDF
+        </button>
+      </div>
     </div>`;
         s.appendChild(row);
         scrollEnd();
@@ -2108,6 +2174,71 @@
         // Instant display for reliability - users prefer speed over animation
         bubble.innerHTML = marked.parse(text);
         scrollEnd();
+      }
+
+      // ── Download response as Word or PDF ──
+      async function downloadResponse(bubbleId, format) {
+        const bubble = document.getElementById(bubbleId);
+        if (!bubble) {
+          showToast("Error: Response not found");
+          return;
+        }
+
+        // Get the text content from the bubble
+        const responseText = bubble.innerText || bubble.textContent;
+        
+        if (!responseText.trim()) {
+          showToast("Error: No content to download");
+          return;
+        }
+
+        try {
+          // Show loading toast
+          showToast(`Generating ${format.toUpperCase()} file...`);
+
+          const response = await fetch(`${API_BASE_URL}/api/download`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text: responseText,
+              format: format
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Download failed: ${response.status}`);
+          }
+
+          // Create blob from response
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          
+          // Create temporary download link
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `research_response_${Date.now()}.${format === 'word' ? 'docx' : 'pdf'}`;
+          document.body.appendChild(a);
+          a.click();
+          
+          // Cleanup
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          showToast(`${format.toUpperCase()} downloaded successfully!`);
+        } catch (error) {
+          console.error('Download error:', error);
+          showToast(`Error: ${error.message}`);
+        }
+      }
+
+      // ── Show toast notification ──
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
       }
 
       // ── Streaming typewriter (legacy - kept for reference) ──

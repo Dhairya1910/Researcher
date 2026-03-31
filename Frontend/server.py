@@ -2,6 +2,9 @@ import sys
 import json
 import logging
 from pathlib import Path
+import io
+import re
+from datetime import datetime
 
 
 LOG_DIR = Path(__file__).resolve().parent / "logs"
@@ -155,6 +158,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
+
+from docx import Document
+from docx.shared import Pt, RGBColor, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from fpdf import FPDF
+import markdown
 
 from Backend.Services.Agent_Utils import Agent
 
@@ -514,6 +523,176 @@ async def status():
         "file_stored": session["file_stored"],
         "uploaded_filename": session["uploaded_filename"],
     }
+
+
+@app.post("/api/download")
+async def download_response(request: Request):
+    """
+    Generate downloadable Word or PDF file from response text.
+    Expects JSON: {"text": "response text", "format": "word" or "pdf"}
+    """
+    logger.info("[/api/download] Download request received")
+    log_flush()
+    
+    try:
+        data = await request.json()
+        response_text = data.get("text", "")
+        file_format = data.get("format", "word").lower()
+        
+        if not response_text:
+            return {"status": "error", "message": "No text provided"}
+        
+        # Clean markdown syntax for better formatting
+        cleaned_text = response_text
+        
+        # Generate timestamp for filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        if file_format == "word":
+            # Generate Word document
+            logger.info("[/api/download] Generating Word document...")
+            log_flush()
+            
+            doc = Document()
+            
+            # Add title
+            title = doc.add_heading('Research Response', 0)
+            title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Add timestamp
+            date_para = doc.add_paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            date_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            date_para.runs[0].font.size = Pt(10)
+            date_para.runs[0].font.color.rgb = RGBColor(128, 128, 128)
+            
+            doc.add_paragraph()  # Blank line
+            
+            # Process text - handle markdown headings and citations
+            lines = cleaned_text.split('\n')
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    doc.add_paragraph()
+                    continue
+                
+                # Handle markdown headings
+                if line.startswith('### '):
+                    doc.add_heading(line[4:], level=3)
+                elif line.startswith('## '):
+                    doc.add_heading(line[3:], level=2)
+                elif line.startswith('# '):
+                    doc.add_heading(line[2:], level=1)
+                elif line.startswith('**') and line.endswith('**'):
+                    # Bold text
+                    p = doc.add_paragraph()
+                    run = p.add_run(line[2:-2])
+                    run.bold = True
+                else:
+                    # Regular paragraph
+                    doc.add_paragraph(line)
+            
+            # Save to bytes buffer
+            buffer = io.BytesIO()
+            doc.save(buffer)
+            buffer.seek(0)
+            
+            filename = f"research_response_{timestamp}.docx"
+            
+            logger.info(f"[/api/download] Word document generated: {filename}")
+            log_flush()
+            
+            return StreamingResponse(
+                buffer,
+                media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
+        
+        elif file_format == "pdf":
+            # Generate PDF document
+            logger.info("[/api/download] Generating PDF document...")
+            log_flush()
+            
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            
+            # Title
+            pdf.set_font("Arial", "B", 16)
+            pdf.cell(0, 10, "Research Response", ln=True, align="C")
+            pdf.ln(5)
+            
+            # Timestamp
+            pdf.set_font("Arial", "I", 10)
+            pdf.set_text_color(128, 128, 128)
+            pdf.cell(0, 10, f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="C")
+            pdf.ln(5)
+            
+            # Reset color
+            pdf.set_text_color(0, 0, 0)
+            
+            # Process text
+            lines = cleaned_text.split('\n')
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    pdf.ln(5)
+                    continue
+                
+                # Handle markdown headings
+                if line.startswith('### '):
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.multi_cell(0, 8, line[4:])
+                    pdf.ln(2)
+                    pdf.set_font("Arial", "", 11)
+                elif line.startswith('## '):
+                    pdf.set_font("Arial", "B", 14)
+                    pdf.multi_cell(0, 9, line[3:])
+                    pdf.ln(3)
+                    pdf.set_font("Arial", "", 11)
+                elif line.startswith('# '):
+                    pdf.set_font("Arial", "B", 16)
+                    pdf.multi_cell(0, 10, line[2:])
+                    pdf.ln(4)
+                    pdf.set_font("Arial", "", 11)
+                else:
+                    # Regular text
+                    pdf.set_font("Arial", "", 11)
+                    # Remove markdown bold syntax for PDF
+                    line = line.replace('**', '')
+                    try:
+                        pdf.multi_cell(0, 6, line)
+                    except Exception as e:
+                        # Handle unicode errors by replacing problematic chars
+                        try:
+                            line_clean = line.encode('latin-1', 'ignore').decode('latin-1')
+                            pdf.multi_cell(0, 6, line_clean)
+                        except:
+                            logger.warning(f"[/api/download] Skipped line due to encoding: {line[:50]}")
+            
+            # Save to bytes buffer
+            buffer = io.BytesIO()
+            pdf_output = pdf.output(dest='S').encode('latin-1', 'ignore')
+            buffer.write(pdf_output)
+            buffer.seek(0)
+            
+            filename = f"research_response_{timestamp}.pdf"
+            
+            logger.info(f"[/api/download] PDF document generated: {filename}")
+            log_flush()
+            
+            return StreamingResponse(
+                buffer,
+                media_type="application/pdf",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
+        
+        else:
+            return {"status": "error", "message": f"Unsupported format: {file_format}"}
+    
+    except Exception as e:
+        logger.error(f"[/api/download] Error: {e}", exc_info=True)
+        log_flush()
+        return {"status": "error", "message": str(e)}
 
 
 # ──────────────────────────────────────────────────────────────
