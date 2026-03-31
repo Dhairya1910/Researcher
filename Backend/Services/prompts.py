@@ -13,6 +13,7 @@ def query_synthesizer_prompt(state):
         ### Context from Document (Summary):
         {context[:2000]}...
         
+        
         ### Objectives:
         1. Analyze the user query AND the document context
         2. Generate queries that:
