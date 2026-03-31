@@ -23,9 +23,11 @@ def query_synthesizer_prompt(state):
            - Cover different aspects of the query that the document addresses
         3. Make queries specific enough to retrieve precise chunks from the document
         
-        ### Rules:
-        - Generate EXACTLY 10 queries (not 30, since we have document context)
-        - Queries MUST be tailored to extract info from the provided document
+    # If document context is available, generate fewer, more targeted queries
+    if context and context.strip():
+        return f"""
+        You are an expert Query Optimization Agent working with uploaded document content.
+        Your task is to generate EXACTLY 10 highly targeted, document-specific sub-queries that will retrieve the most relevant information from the provided context.
         - Use keywords and phrases that appear in the document context
         - Focus on what the document can answer about the user's query
         - Do NOT ask about information clearly missing from the context
@@ -42,18 +44,17 @@ def query_synthesizer_prompt(state):
         ...
         ]
         
+        ### Rules:
+        - Generate EXACTLY 10 queries (targeted for document context)
+        - Queries MUST be tailored to extract info from the provided document
+    """
+    
+
         ### Now process:
         User Query: {state['user_query']}
         Current datetime: {datetime.now()}
         
         **Generate EXACTLY 10 document-targeted queries.**
-    """
-    
-
-    else:
-        return f"""
-        You are an expert Query Optimization Agent.
-        Your task is to transform a single user query into EXACTLY 15 diverse, high-quality, and information-rich sub-queries that cover the topic comprehensively.
         
         ### Objectives:
         1. Break down the original query into multiple meaningful angles.
@@ -108,7 +109,7 @@ def query_synthesizer_prompt(state):
         User Query: {state['user_query']}
         Current datetime: {datetime.now()}
         
-        **Generate EXACTLY 15 diverse, high-quality sub-queries.**
+        **Generate EXACTLY 30 diverse, high-quality sub-queries.**
     """
 
 
@@ -166,7 +167,7 @@ def query_evaluator_prompt(state):
         - Do NOT answer the queries themselves.
         - MUST return a score for EVERY query in the refined_queries list.
         - Scores must be integers between 0 and 10.
-        - Expect around 10-15 queries to evaluate depending on mode (15 for general, 10 for document).
+        - Expect 10 queries for document mode, 30 queries for research mode.
 
         ### Input:
         Base Query: {state["user_query"]}  

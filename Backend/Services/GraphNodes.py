@@ -187,7 +187,7 @@ def query_classifier_node(state: ResearchGraphState) -> str:
 def query_synthesizer_node(state: ResearchGraphState) -> dict:
     """Expands user query into diverse, high-quality research sub-queries.
     If document context is available, generates 10 targeted queries.
-    Otherwise, generates 15 comprehensive queries for web search.
+    Otherwise, generates 30 comprehensive queries for research mode.
     """
     context = state.get("context", "")
     has_context = context and context.strip() and len(context) > 10
@@ -195,7 +195,7 @@ def query_synthesizer_node(state: ResearchGraphState) -> dict:
     if has_context:
         logger.info("[QuerySynthesizer] START - Document context available, generating 10 targeted queries")
     else:
-        logger.info("[QuerySynthesizer] START - No document context, generating 15 comprehensive queries")
+        logger.info("[QuerySynthesizer] START - Research mode, generating 30 comprehensive queries")
     _flush()
 
     prompt = query_synthesizer_prompt(state)

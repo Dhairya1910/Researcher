@@ -11,7 +11,12 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"
       rel="stylesheet"
     />
+    <!-- Marked.js for markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- KaTeX for LaTeX math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
 
     <style>
       /* ── Variables ── */
@@ -1623,6 +1628,32 @@
         timerStartTime: null,
       };
 
+      // ── Helper function to render markdown with LaTeX support ──
+      function renderMarkdownWithLatex(content) {
+        // First, render markdown
+        const html = marked.parse(content);
+        
+        // Create a temporary div to hold the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Render LaTeX using KaTeX auto-render
+        if (window.renderMathInElement) {
+          renderMathInElement(tempDiv, {
+            delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+            ],
+            throwOnError: false,
+            trust: true
+          });
+        }
+        
+        return tempDiv.innerHTML;
+      }
+
       // ── Mode switch ──
       async function setMode(m) {
         state.mode = m;
@@ -1819,7 +1850,7 @@
         <span>${ts}</span>
       </div>
       <div class="msg-bubble ${isUser ? "bubble-user" : "bubble-ai"}">
-        ${isUser ? escHtml(content) : marked.parse(content)}
+        ${isUser ? escHtml(content) : renderMarkdownWithLatex(content)}
       </div>
     </div>`;
         scroll.appendChild(row);
@@ -2064,7 +2095,7 @@
           
           for (let i = 0; i < text.length; i += chunkSize) {
             displayedText += text.substring(i, Math.min(i + chunkSize, text.length));
-            bubble.innerHTML = marked.parse(displayedText) + '<span class="cursor-blink"></span>';
+            bubble.innerHTML = renderMarkdownWithLatex(displayedText) + '<span class="cursor-blink"></span>';
             scrollEnd();
             await sleep(delay);
           }
@@ -2118,7 +2149,7 @@
         }
 
         // Final render without cursor
-        bubble.innerHTML = marked.parse(fullText);
+        bubble.innerHTML = renderMarkdownWithLatex(fullText);
         scrollEnd();
 
         // Store in message history
@@ -2172,7 +2203,7 @@
         const bubble = document.getElementById(bubbleId);
         
         // Instant display for reliability - users prefer speed over animation
-        bubble.innerHTML = marked.parse(text);
+        bubble.innerHTML = renderMarkdownWithLatex(text);
         scrollEnd();
       }
 
@@ -2273,13 +2304,13 @@
 
         for (let i = 0; i < text.length; i += chunkSize) {
           displayed = text.substring(0, i + chunkSize);
-          bubble.innerHTML = marked.parse(displayed) + '<span class="cursor-blink"></span>';
+          bubble.innerHTML = renderMarkdownWithLatex(displayed) + '<span class="cursor-blink"></span>';
           scrollEnd();
           await sleep(delay);
         }
         
         // Final render without cursor
-        bubble.innerHTML = marked.parse(text);
+        bubble.innerHTML = renderMarkdownWithLatex(text);
         scrollEnd();
       }
 

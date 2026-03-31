@@ -137,7 +137,6 @@ class ResearchToolkit(BaseToolkit):
             result = exa.search(
                 query,
                 type="auto",
-                use_autoprompt=True,
                 num_results=8,
                 contents={
                     "highlights": {"max_characters": 1200, "num_sentences": 5},
