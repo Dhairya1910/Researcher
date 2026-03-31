@@ -297,6 +297,10 @@
         border-color: var(--accent);
         background: var(--accent-light);
       }
+      .upload-zone.has-file:hover {
+        background: var(--accent-light);
+        border-color: var(--accent-dark);
+      }
       .upload-zone input[type="file"] {
         position: absolute;
         inset: 0;
@@ -1068,15 +1072,6 @@
         <div class="divider"></div>
 
         <div>
-          <div class="label">Model</div>
-          <select class="calm-select" id="model-select">
-            <option value="mistral-medium-latest">mistral-medium</option>
-            <option value="mistral-small-latest">mistral-small</option>
-            <option value="mistral-large-latest">mistral-large</option>
-          </select>
-        </div>
-
-        <div>
           <div class="label">Mode</div>
           <div class="mode-tabs">
             <button
@@ -1161,10 +1156,6 @@
             <div class="header-sub" id="header-sub">
               Calm, thoughtful, precise
             </div>
-          </div>
-          <div class="model-pill">
-            <div class="model-pill-dot"></div>
-            <span id="model-pill-text">mistral-medium-latest</span>
           </div>
         </div>
 
@@ -1276,10 +1267,6 @@
 
         if (m === "Research") {
           state.model = "mistral-medium-latest";
-          document.getElementById("model-select").value =
-            "mistral-medium-latest";
-          document.getElementById("model-pill-text").textContent =
-            "mistral-medium-latest";
           document.getElementById("header-sub").textContent =
             "Deep analysis · Extended reasoning";
           document.getElementById("mode-hint").textContent =
@@ -1299,25 +1286,19 @@
         });
       }
 
-      // ── Model select ──
-      document
-        .getElementById("model-select")
-        .addEventListener("change", async function () {
-          if (state.mode !== "Research") {
-            state.model = this.value;
-            document.getElementById("model-pill-text").textContent = this.value;
-            await fetch(`${API_BASE_URL}/api/config`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ model: state.model }),
-            });
-          }
-        });
-
       // ── File upload → sends to backend ──
       async function handleFile(inp) {
         const f = inp.files[0];
         if (!f) return;
+        
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (f.size > maxSize) {
+          showToast("File too large (max 10MB)");
+          inp.value = "";
+          return;
+        }
+        
         state.file = f;
 
         // Show uploading state
@@ -1333,32 +1314,62 @@
             method: "POST",
             body: formData,
           });
+          
+          if (!res.ok) {
+            throw new Error(`Upload failed: ${res.statusText}`);
+          }
+          
           const data = await res.json();
+          
+          if (data.status === "error") {
+            throw new Error(data.message || "Upload failed");
+          }
 
-          document.getElementById("upload-text").textContent = "File loaded";
+          document.getElementById("upload-text").textContent = "✓ File loaded";
           document.getElementById("status-text").textContent = "Agent ready";
-          showToast("Context ready: " + f.name);
+          showToast(`Context ready: ${f.name}`);
         } catch (e) {
-          document.getElementById("upload-text").textContent = "Upload failed";
+          console.error("Upload error:", e);
+          // Reset on error
+          document.getElementById("upload-zone").classList.remove("has-file");
+          document.getElementById("upload-text").innerHTML = "PDF or image<br/>for context";
+          document.getElementById("upload-fname").textContent = "";
           document.getElementById("status-text").textContent = "Upload error";
-          showToast("Upload failed: " + e.message);
+          inp.value = "";
+          state.file = null;
+          showToast(`Upload failed: ${e.message}`);
         }
       }
 
       // ── Remove file ──
       async function removeFile(e) {
-        e.stopPropagation();
-        e.preventDefault();
+        if (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+        
+        // Reset file state
         state.file = null;
 
-        document.getElementById("upload-zone").classList.remove("has-file");
-        document.getElementById("upload-text").innerHTML =
-          "PDF or image<br/>for context";
-        document.getElementById("upload-fname").textContent = "";
-        document.getElementById("file-input").value = "";
+        // Reset UI elements
+        const uploadZone = document.getElementById("upload-zone");
+        const uploadText = document.getElementById("upload-text");
+        const uploadFname = document.getElementById("upload-fname");
+        const fileInput = document.getElementById("file-input");
 
-        await fetch(`${API_BASE_URL}/api/clear-file`, { method: "POST" });
-        showToast("File removed");
+        uploadZone.classList.remove("has-file");
+        uploadText.innerHTML = "PDF or image<br/>for context";
+        uploadFname.textContent = "";
+        fileInput.value = "";
+
+        // Clear backend
+        try {
+          await fetch(`${API_BASE_URL}/api/clear-file`, { method: "POST" });
+          showToast("File removed successfully");
+        } catch (error) {
+          console.error("Error clearing file:", error);
+          showToast("File removed (backend sync failed)");
+        }
       }
 
       // ── Clear chat ──
