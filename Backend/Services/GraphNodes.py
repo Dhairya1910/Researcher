@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from pathlib import Path
 from dotenv import load_dotenv
@@ -381,90 +382,127 @@ def query_optimizer_node(state: ResearchGraphState) -> dict:
     return {"refined_queries": final_queries}
 
 
+def _extract_json_from_response(text: str) -> dict | None:
+    """
+    Robustly extract a JSON object from an LLM response.
+    Handles raw JSON, markdown code fences, and inline JSON.
+    """
+    if not text:
+        return None
+
+    # 1. Try direct parse first
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError:
+        pass
+
+    # 2. Extract from markdown code fences: ```json ... ``` or ``` ... ```
+    fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)```", text, re.IGNORECASE)
+    if fence_match:
+        try:
+            return json.loads(fence_match.group(1).strip())
+        except json.JSONDecodeError:
+            pass
+
+    # 3. Find first {...} block
+    brace_match = re.search(r"\{[\s\S]*?\}", text)
+    if brace_match:
+        try:
+            return json.loads(brace_match.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    return None
+
+
 def tool_decision_node(state: ResearchGraphState) -> dict:
     queries = state.get("refined_queries", [])
     base_query = state.get("user_query", "")
     input_type = state.get("input_type", "general")
 
+    logger.info("[ToolDecision] START")
+    logger.info(f"[ToolDecision] input_type={input_type} | queries={len(queries)}")
+    _flush()
+
     # Different prompts based on whether document is available
     if input_type in ("pdf", "docs"):
-        prompt = f"""
-    You are an intelligent research agent with access to uploaded documents AND web search.
+        prompt = f"""You are an intelligent research agent with access to uploaded documents AND web search.
 
-    Tools Available: 
-    1. document : Retrieves information from the uploaded document(s)
-    2. general_search : Fast fact-checking and instant web responses  
-    3. advanced_search : Deep research and current information from the web
+Tools Available:
+1. document        - Retrieves information from the uploaded document(s)
+2. general_search  - Fast fact-checking and instant web responses
+3. advanced_search - Deep research, latest news, and current information from the web
 
-    Your Strategy:
-    - ALWAYS check the document FIRST for relevant information
-    - If the document is insufficient or outdated, ALSO use web search tools
-    - You can use MULTIPLE tools in sequence (document + general_search OR document + advanced_search)
-    - Select tool: "document" to start, OR "general_search"/"advanced_search" if web info is needed
-    - Select ONLY the most useful queries (max 5)
+Strategy:
+- ALWAYS check the document FIRST for relevant information
+- If the document is insufficient or outdated, use web search tools
+- Select ONLY the most useful queries (max 5)
 
-    ### Base Query:
-    {base_query}
+Base Query: {base_query}
 
-    ### Candidate Queries:
-    {queries}
+Candidate Queries: {queries}
 
-    IMPORTANT: For uploaded documents, prefer starting with "document" tool.
-    If you think the document might lack complete info, still use "document" first.
+IMPORTANT: Respond with ONLY a valid JSON object, no markdown, no extra text:
+{{"use_tool": true, "tool": "document", "selected_queries": ["q1", "q2"]}}
 
-    STRICTLY return JSON:
-    {{
-        "use_tool": true/false,
-        "tool": "document | advanced_search | general_search | none",
-        "selected_queries": ["q1", "q2",...]
-    }}
-    """
+Allowed values for "tool": "document", "general_search", "advanced_search", "none"
+"""
     else:
-        prompt = f"""
-    You are an intelligent research agent.
+        prompt = f"""You are an intelligent research agent deciding which tool to use.
 
-    Tools Description : 
-    1. document : This tool retrieves information from uploaded document(s) (if available)
-    2. general_search : Fast fact-checking and instant responses from the web
-    3. advanced_search : Deep research and current/latest information from the web
+Tools:
+1. general_search  - Use for quick facts, definitions, general knowledge, recent events (fast)
+2. advanced_search - Use for deep research, latest news, post-2024 data, citations needed (thorough)
+3. none            - Use only if the query can be answered from pre-trained knowledge alone
 
-    Your job:
-    1. Decide if external tools are needed.
-    2. If YES:
-    - Select tool: ["advanced_search", "general_search"]
-    - Select ONLY useful queries (max 5)
-    3. If NO:
-    - Answer can be generated directly
+Decision Rules:
+- Use "advanced_search" when: latest news, current events, real-time data, citations needed, deep research
+- Use "general_search" when: simple facts, quick lookups, general knowledge
+- Use "none" when: simple math, greetings, or clearly answerable without web search
+- Select ONLY the most useful queries (max 5)
 
-    ### Base Query:
-    {base_query}
+Base Query: {base_query}
 
-    ### Candidate Queries:
-    {queries}
+Candidate Queries: {queries}
 
-    STRICTLY return JSON:
-    {{
-        "use_tool": true/false,
-        "tool": "advanced_search | general_search | none",
-        "selected_queries": ["q1", "q2",...]
-    }}
-    """
-    
-    model = _make_main_model()
+IMPORTANT: Respond with ONLY a valid JSON object, no markdown, no extra text:
+{{"use_tool": true, "tool": "advanced_search", "selected_queries": ["q1", "q2"]}}
+
+Allowed values for "tool": "general_search", "advanced_search", "none"
+"""
+
+    # Use the non-streaming decision model (deterministic, structured output)
+    model = _make_decision_model()
     response = model.invoke(prompt)
 
-    try:
-        decision = json.loads(response.content if hasattr(response, 'content') else str(response))
-    except Exception:
-        # Fallback: use document tool if document available, otherwise general search
-        fallback_tool = "document" if input_type in ("pdf", "docs") else "general_search"
+    raw_content = response.content if hasattr(response, "content") else str(response)
+    logger.info(f"[ToolDecision] Raw LLM response: {raw_content[:300]}")
+    _flush()
+
+    decision = _extract_json_from_response(raw_content)
+
+    if decision is None:
+        # Fallback: use document tool if document available, otherwise advanced_search
+        fallback_tool = "document" if input_type in ("pdf", "docs") else "advanced_search"
+        logger.warning(
+            f"[ToolDecision] JSON parse failed — using fallback tool: {fallback_tool}"
+        )
         decision = {
             "use_tool": True,
             "tool": fallback_tool,
             "selected_queries": queries[:5],
         }
+    else:
+        # Validate tool value is one of the known tools
+        valid_tools = {"document", "general_search", "advanced_search", "none"}
+        tool_val = decision.get("tool", "none")
+        if tool_val not in valid_tools:
+            logger.warning(
+                f"[ToolDecision] Unknown tool '{tool_val}' in response — correcting to advanced_search"
+            )
+            decision["tool"] = "advanced_search" if input_type not in ("pdf", "docs") else "document"
 
-    logger.info(f"[ToolDecision] Decision: {decision}")
+    logger.info(f"[ToolDecision] Final decision: use_tool={decision.get('use_tool')} | tool={decision.get('tool')} | queries={len(decision.get('selected_queries', []))}")
     _flush()
 
     return {"tool_decision": decision}
