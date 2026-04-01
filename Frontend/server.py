@@ -638,41 +638,44 @@ async def download_response(request: Request):
                     pdf.ln(5)
                     continue
                 
+                # Clean line for PDF - handle unicode early
+                line_clean = line.encode('latin-1', 'ignore').decode('latin-1')
+                
                 # Handle markdown headings
-                if line.startswith('### '):
+                if line_clean.startswith('### '):
+                    pdf.ln(2)
                     pdf.set_font("Arial", "B", 12)
-                    pdf.multi_cell(0, 8, line[4:])
+                    pdf.multi_cell(0, 8, line_clean[4:])
                     pdf.ln(2)
                     pdf.set_font("Arial", "", 11)
-                elif line.startswith('## '):
+                elif line_clean.startswith('## '):
                     pdf.set_font("Arial", "B", 14)
-                    pdf.multi_cell(0, 9, line[3:])
+                    pdf.multi_cell(0, 9, line_clean[3:])
                     pdf.ln(3)
                     pdf.set_font("Arial", "", 11)
-                elif line.startswith('# '):
+                elif line_clean.startswith('# '):
                     pdf.set_font("Arial", "B", 16)
-                    pdf.multi_cell(0, 10, line[2:])
+                    pdf.multi_cell(0, 10, line_clean[2:])
                     pdf.ln(4)
                     pdf.set_font("Arial", "", 11)
                 else:
-                    # Regular text
+                    # Regular text - remove markdown bold syntax
+                    line_clean = line_clean.replace('**', '')
                     pdf.set_font("Arial", "", 11)
-                    # Remove markdown bold syntax for PDF
-                    line = line.replace('**', '')
                     try:
-                        pdf.multi_cell(0, 6, line)
+                        pdf.multi_cell(0, 6, line_clean)
                     except Exception as e:
-                        # Handle unicode errors by replacing problematic chars
-                        try:
-                            line_clean = line.encode('latin-1', 'ignore').decode('latin-1')
-                            pdf.multi_cell(0, 6, line_clean)
-                        except:
-                            logger.warning(f"[/api/download] Skipped line due to encoding: {line[:50]}")
+                        logger.warning(f"[/api/download] Skipped line: {str(e)[:50]}")
             
-            # Save to bytes buffer
+            # Save to bytes buffer - fpdf2's output(dest='S') returns bytes directly
             buffer = io.BytesIO()
-            pdf_output = pdf.output(dest='S').encode('latin-1', 'ignore')
-            buffer.write(pdf_output)
+            pdf_bytes = pdf.output(dest='S')
+            # Handle both old and new fpdf2 versions
+            if isinstance(pdf_bytes, bytes):
+                buffer.write(pdf_bytes)
+            else:
+                # Older versions might return str
+                buffer.write(pdf_bytes.encode('latin-1', 'ignore'))
             buffer.seek(0)
             
             filename = f"research_response_{timestamp}.pdf"

@@ -412,101 +412,116 @@ def _extract_json_from_response(text: str) -> dict | None:
 
 
 def tool_decision_node(state: ResearchGraphState) -> dict:
+    """
+    Intelligently decides which queries need web search and assigns the appropriate tool per query.
+    Returns a decision with query-tool pairs for natural, selective tool usage.
+    """
     queries = state.get("refined_queries", [])
     base_query = state.get("user_query", "")
     input_type = state.get("input_type", "general")
 
     logger.info("[ToolDecision] START")
-    logger.info(f"[ToolDecision] input_type={input_type} | queries={len(queries)}")
+    logger.info(f"[ToolDecision] input_type={input_type} | candidate_queries={len(queries)}")
     _flush()
 
-    # Different prompts based on whether document is available
+    # Different strategies based on whether document is available
     if input_type in ("pdf", "docs"):
-        prompt = f"""You are an intelligent research agent with access to uploaded documents AND web search.
+        prompt = f"""You are an intelligent research agent with access to documents AND web search.
 
-Tools Available:
-1. document        - Retrieves information from the uploaded document(s)
-2. general_search  - Fast fact-checking and instant web responses
-3. advanced_search - Deep research, latest news, and current information from the web
+Available Tools:
+1. document        - Retrieves from uploaded document(s)
+2. general_search  - Fast web search for facts, definitions, recent events,(post-2024)
+3. advanced_search - Deep research, latest news (post-2024), citations, technical details
 
-Strategy:
-- ALWAYS check the document FIRST for relevant information
-- If the document is insufficient or outdated, use web search tools
-- Select ONLY the most useful queries (max 6 for optimal performance)
-
-Base Query: {base_query}
+User Question: {base_query}
 
 Candidate Queries: {queries}
 
-IMPORTANT: Respond with ONLY a valid JSON object, no markdown, no extra text:
-{{"use_tool": true, "tool": "document", "selected_queries": ["q1", "q2"]}}
+Task: Select ONLY the queries that genuinely need searching. For each selected query, assign the most appropriate tool.
 
-Allowed values for "tool": "document", "general_search", "advanced_search", "none"
+Rules:
+- Start with "document" for queries answerable from the uploaded document
+- Use "general_search" for quick facts, simple lookups, recent general info,latest news/data (2024+)
+- Use "advanced_search" ONLY when you need: latest news/data (2024+), deep technical research, authoritative citations
+- Be selective: Choose 3-5 most essential queries (quality over quantity)
+- Skip queries that are redundant or can be answered from pre-trained knowledge
+
+Respond with ONLY valid JSON (no markdown, no extra text):
+{{"query_tool_pairs": [{{"query": "query text", "tool": "document"}}, {{"query": "another query", "tool": "general_search"}}]}}
+
+Valid tools: "document", "general_search", "advanced_search", "none"
 """
     else:
-        prompt = f"""You are an intelligent research agent deciding which tool to use.
+        prompt = f"""You are an intelligent research agent deciding which queries need web search and which tool to use.
 
-Tools:
-1. general_search  - Use for quick facts, definitions, general knowledge, recent events (fast)
-2. advanced_search - Use for deep research, latest news, post-2024 data, citations needed (thorough)
-3. none            - Use only if the query can be answered from pre-trained knowledge alone
+Available Tools:
+1. general_search  - Fast web search for quick facts, definitions, general knowledge, recent events
+2. advanced_search - Deep research for latest news (post-2024), technical details, citations, authoritative sources
 
-Decision Rules:
-- Use "advanced_search" when: latest news, current events, real-time data, citations needed, deep research
-- Use "general_search" when: simple facts, quick lookups, general knowledge
-- Use "none" when: simple math, greetings, or clearly answerable without web search
-- Select ONLY the most useful queries (max 6 for optimal performance)
-
-Base Query: {base_query}
+User Question: {base_query}
 
 Candidate Queries: {queries}
 
-IMPORTANT: Respond with ONLY a valid JSON object, no markdown, no extra text:
-{{"use_tool": true, "tool": "advanced_search", "selected_queries": ["q1", "q2"]}}
+Task: Select ONLY queries that genuinely need web search. Assign the appropriate tool per query.
 
-Allowed values for "tool": "general_search", "advanced_search", "none"
+Decision Rules:
+- Use "general_search" for: simple facts, definitions, quick lookups, general recent info
+- Use "advanced_search" for: latest news/events (2024+), deep technical research, academic citations, specialized knowledge
+- Use "none" for queries answerable from pre-trained knowledge (math, basic concepts, greetings)
+- Be selective: Choose 3-5 most valuable queries that will provide the best information
+- Avoid redundant queries - pick diverse angles
+
+Respond with ONLY valid JSON (no markdown, no extra text):
+{{"query_tool_pairs": [{{"query": "query text", "tool": "general_search"}}, {{"query": "another query", "tool": "advanced_search"}}]}}
+
+Valid tools: "general_search", "advanced_search", "none"
 """
 
-    # Use the non-streaming decision model (deterministic, structured output)
     model = _make_decision_model()
     response = model.invoke(prompt)
 
     raw_content = response.content if hasattr(response, "content") else str(response)
-    logger.info(f"[ToolDecision] Raw LLM response: {raw_content[:300]}")
+    logger.info(f"[ToolDecision] Raw LLM response: {raw_content[:200]}...")
     _flush()
 
     decision = _extract_json_from_response(raw_content)
 
-    if decision is None:
-        # Fallback: use document tool if document available, otherwise advanced_search
-        fallback_tool = "document" if input_type in ("pdf", "docs") else "advanced_search"
-        logger.warning(
-            f"[ToolDecision] JSON parse failed — using fallback tool: {fallback_tool}"
-        )
-        decision = {
-            "use_tool": True,
-            "tool": fallback_tool,
-            "selected_queries": queries[:6],
-        }
+    if decision is None or "query_tool_pairs" not in decision:
+        # Fallback: use first 3 queries with appropriate default tool
+        fallback_tool = "document" if input_type in ("pdf", "docs") else "general_search"
+        logger.warning(f"[ToolDecision] Parse failed - using fallback: {fallback_tool} for top 3 queries")
+        _flush()
+        query_tool_pairs = [
+            {"query": q, "tool": fallback_tool} for q in queries[:3]
+        ]
+        decision = {"query_tool_pairs": query_tool_pairs}
     else:
-        # Validate tool value is one of the known tools
+        query_tool_pairs = decision.get("query_tool_pairs", [])
+        # Validate tools in pairs
         valid_tools = {"document", "general_search", "advanced_search", "none"}
-        tool_val = decision.get("tool", "none")
-        if tool_val not in valid_tools:
-            logger.warning(
-                f"[ToolDecision] Unknown tool '{tool_val}' in response — correcting to advanced_search"
-            )
-            decision["tool"] = "advanced_search" if input_type not in ("pdf", "docs") else "document"
+        for pair in query_tool_pairs:
+            if pair.get("tool") not in valid_tools:
+                logger.warning(f"[ToolDecision] Invalid tool '{pair.get('tool')}' - correcting to general_search")
+                pair["tool"] = "general_search"
 
-    logger.info(f"[ToolDecision] Final decision: use_tool={decision.get('use_tool')} | tool={decision.get('tool')} | queries={len(decision.get('selected_queries', []))}")
+        query_tool_pairs = [p for p in query_tool_pairs if p.get("tool") != "none"]
+        decision["query_tool_pairs"] = query_tool_pairs
+
+    logger.info(f"[ToolDecision] Selected {len(query_tool_pairs)} query-tool pairs:")
+    for i, pair in enumerate(query_tool_pairs[:3], 1):
+        q_preview = pair.get('query', '')[:50] + '...' if len(pair.get('query', '')) > 50 else pair.get('query', '')
+        logger.info(f"  {i}. [{pair.get('tool')}] {q_preview}")
+    if len(query_tool_pairs) > 3:
+        logger.info(f"  ... and {len(query_tool_pairs) - 3} more")
     _flush()
 
     return {"tool_decision": decision}
 
 
 def make_tool_executor_node(toolkit):
-    """Returns a graph node function with toolkit captured in closure.
-    Enhanced to support multi-tool execution for document scenarios.
+    """
+    Returns a graph node function with toolkit captured in closure.
+    Executes each query with its assigned tool for natural, intelligent tool usage.
     """
 
     def tool_executor_node(state: ResearchGraphState) -> dict:
@@ -514,150 +529,133 @@ def make_tool_executor_node(toolkit):
         _flush()
 
         decision = state.get("tool_decision", {})
-        use_tool = decision.get("use_tool", False)
-        tool_type = decision.get("tool", "none")
-        queries = decision.get("selected_queries", [])
+        query_tool_pairs = decision.get("query_tool_pairs", [])
 
-        if not use_tool or tool_type == "none" or not queries:
-            logger.info("[ToolExecutor] SKIPPED (No tool needed)")
+        if not query_tool_pairs:
+            logger.info("[ToolExecutor] SKIPPED (No queries need tool execution)")
             _flush()
             return {"tool_results": []}
 
         tools_list = toolkit.get_tools()
         tools_map = {t.name: t for t in tools_list}
 
-        # Map tool types to actual tools
         tool_mapping = {
             "document": ("document_retrieval_tool", "DocumentRetrieval"),
             "advanced_search": ("Advance_Search_mode", "ExaSearch"),
             "general_search": ("general_search_mode", "Tavily"),
         }
 
-        if tool_type not in tool_mapping:
-            logger.warning(f"[ToolExecutor] Unknown tool type: {tool_type}")
-            _flush()
-            return {"tool_results": []}
-
-        tool_key, tool_name = tool_mapping[tool_type]
-        selected_tool = tools_map.get(tool_key)
-
-        if not selected_tool:
-            logger.error(f"[ToolExecutor] Tool not found: {tool_type}")
-            _flush()
-            return {"tool_results": []}
-
-        logger.info(f"[ToolExecutor] Tool={tool_name} | Queries={len(queries)}")
+        logger.info(f"[ToolExecutor] Processing {len(query_tool_pairs)} query-tool pairs")
         _flush()
 
         tool_results = []
         
-        # Execute document retrieval (batch mode)
-        if tool_type == "document":
-            try:
-                start = time.time()
-                # Document tool expects dict with 'queries' key
-                result = selected_tool.invoke({"queries": queries[:5]})
-                elapsed = time.time() - start
+        # Group queries by tool for efficient execution
+        tool_groups = {}
+        for pair in query_tool_pairs:
+            query = pair.get("query", "")
+            tool_type = pair.get("tool", "general_search")
+            
+            if tool_type not in tool_groups:
+                tool_groups[tool_type] = []
+            tool_groups[tool_type].append(query)
+        
+        # Execute each tool group
+        for tool_type, queries_for_tool in tool_groups.items():
+            if tool_type not in tool_mapping:
+                logger.warning(f"[ToolExecutor] Unknown tool type: {tool_type}, skipping")
+                continue
+                
+            tool_key, tool_name = tool_mapping[tool_type]
+            selected_tool = tools_map.get(tool_key)
+            
+            if not selected_tool:
+                logger.error(f"[ToolExecutor] Tool not found: {tool_key}")
+                continue
+            
+            logger.info(f"[ToolExecutor] Executing {tool_name} for {len(queries_for_tool)} queries")
+            _flush()
+            
+            # Special handling for document tool (batch mode)
+            if tool_type == "document":
+                try:
+                    start = time.time()
+                    result = selected_tool.invoke({"queries": queries_for_tool[:5]})
+                    elapsed = time.time() - start
 
-                tool_results.append(
-                    {
-                        "query": f"Batch of {min(len(queries), 5)} queries",
+                    tool_results.append({
+                        "query": f"Document batch: {len(queries_for_tool)} queries",
                         "result": result,
                         "tool": tool_name,
-                    }
-                )
+                    })
 
-                logger.info(
-                    f"[{tool_name}] {elapsed:.2f}s | batch={min(len(queries), 5)}"
-                )
-                _flush()
-
-                # Check if document results are insufficient
-                # If result indicates no relevant info found, try general search as fallback
-                if "No relevant information found" in result or len(result.strip()) < 50:
-                    logger.info(
-                        "[ToolExecutor] Document retrieval insufficient, attempting general search fallback"
-                    )
+                    logger.info(f"[{tool_name}] {elapsed:.2f}s | batch={len(queries_for_tool)}")
                     _flush()
-                    
-                    # Try general search for a few queries
-                    general_tool = tools_map.get("general_search_mode")
-                    if general_tool:
-                        for i, query in enumerate(queries[:3], 1):  # Limit fallback to 3 queries
-                            try:
-                                start = time.time()
-                                # General search tool expects dict with 'query' key (singular)
-                                web_result = general_tool.invoke({"query": query})
-                                elapsed = time.time() - start
 
-                                tool_results.append(
-                                    {
+                    # If document retrieval is insufficient, try general search fallback
+                    if "No relevant information found" in result or len(result.strip()) < 50:
+                        logger.info("[ToolExecutor] Document insufficient, trying general_search fallback")
+                        _flush()
+                        
+                        general_tool = tools_map.get("general_search_mode")
+                        if general_tool:
+                            for i, query in enumerate(queries_for_tool[:2], 1):
+                                try:
+                                    start = time.time()
+                                    web_result = general_tool.invoke({"query": query})
+                                    elapsed = time.time() - start
+
+                                    tool_results.append({
                                         "query": query,
                                         "result": web_result,
                                         "tool": "Tavily (Fallback)",
-                                    }
-                                )
+                                    })
 
-                                preview = query[:60] + "..." if len(query) > 60 else query
-                                logger.info(
-                                    f"[Tavily-Fallback] ({i}/3) '{preview}' | {elapsed:.2f}s"
-                                )
-                                _flush()
+                                    preview = query[:50] + "..." if len(query) > 50 else query
+                                    logger.info(f"[Tavily-Fallback] ({i}/2) '{preview}' | {elapsed:.2f}s")
+                                    _flush()
 
-                            except Exception as e:
-                                logger.error(
-                                    f"[Tavily-Fallback] ERROR: {e}",
-                                    exc_info=True,
-                                )
-                                _flush()
+                                except Exception as e:
+                                    logger.error(f"[Tavily-Fallback] ERROR: {e}", exc_info=True)
+                                    _flush()
 
-            except Exception as e:
-                logger.error(f"[{tool_name}] ERROR: {e}", exc_info=True)
-                _flush()
-                tool_results.append(
-                    {
-                        "query": str(queries[:5]),
-                        "result": f"Retrieval error: {str(e)}",
+                except Exception as e:
+                    logger.error(f"[{tool_name}] ERROR: {e}", exc_info=True)
+                    _flush()
+                    tool_results.append({
+                        "query": f"Document batch: {len(queries_for_tool)} queries",
+                        "result": f"Error: {str(e)}",
                         "tool": tool_name,
-                    }
-                )
+                    })
+            
+            # Web search tools - execute individually
+            else:
+                for i, query in enumerate(queries_for_tool, 1):
+                    try:
+                        start = time.time()
+                        result = selected_tool.invoke({"query": query})
+                        elapsed = time.time() - start
 
-        else:
-            for i, query in enumerate(queries, 1):
-                try:
-                    start = time.time()
-                    result = selected_tool.invoke({"query": query})
-                    elapsed = time.time() - start
-
-                    tool_results.append(
-                        {
+                        tool_results.append({
                             "query": query,
                             "result": result,
                             "tool": tool_name,
-                        }
-                    )
+                        })
 
-                    preview = query[:60] + "..." if len(query) > 60 else query
-                    logger.info(
-                        f"[{tool_name}] ({i}/{len(queries)}) '{preview}' | {elapsed:.2f}s"
-                    )
-                    _flush()
+                        preview = query[:50] + "..." if len(query) > 50 else query
+                        logger.info(f"[{tool_name}] ({i}/{len(queries_for_tool)}) '{preview}' | {elapsed:.2f}s")
+                        _flush()
 
-                except Exception as e:
-                    preview = query[:40] + "..." if len(query) > 40 else query
-                    logger.error(
-                        f"[{tool_name}] ERROR on query '{preview}': {e}",
-                        exc_info=True,
-                    )
-                    _flush()
+                    except Exception as e:
+                        preview = query[:40] + "..." if len(query) > 40 else query
+                        logger.error(f"[{tool_name}] ERROR on '{preview}': {e}", exc_info=True)
+                        _flush()
 
-                    tool_results.append(
-                        {
+                        tool_results.append({
                             "query": query,
                             "result": f"Search error: {str(e)}",
                             "tool": tool_name,
-                        }
-                    )
+                        })
 
         logger.info(f"[ToolExecutor] DONE | {len(tool_results)} results collected")
         _flush()
