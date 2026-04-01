@@ -525,6 +525,105 @@ async def status():
     }
 
 
+def extract_references(text):
+    """Extract references section and create a mapping of citation numbers to URLs."""
+    references = {}
+    lines = text.split('\n')
+    in_references = False
+    
+    for line in lines:
+        # Check if we're in the references section
+        if re.match(r'^#+\s*(References?|Sources?|Citations?)\s*$', line, re.IGNORECASE):
+            in_references = True
+            continue
+        
+        if in_references:
+            # Match patterns like: [1] Title - URL or [1] Title (URL) or [1] URL
+            match = re.match(r'\[(\d+)\]\s*(.+?)(?:\s*[-–—]\s*|\s*\()(https?://[^\s)]+)', line)
+            if match:
+                ref_num = match.group(1)
+                url = match.group(3)
+                references[ref_num] = url
+            else:
+                # Try simpler pattern: [1] anything with URL somewhere
+                match = re.match(r'\[(\d+)\]\s*.+?(https?://\S+)', line)
+                if match:
+                    ref_num = match.group(1)
+                    url = match.group(2).rstrip('.,;:)')
+                    references[ref_num] = url
+    
+    return references
+
+
+def add_hyperlink(paragraph, text, url):
+    """Add a hyperlink to a paragraph using python-docx."""
+    from docx.oxml.shared import OxmlElement
+    from docx.oxml.ns import qn
+    
+    # This gets access to the document.xml.rels file and gets a new relation id value
+    part = paragraph.part
+    r_id = part.relate_to(url, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink', is_external=True)
+    
+    # Create the w:hyperlink tag and add needed values
+    hyperlink = OxmlElement('w:hyperlink')
+    hyperlink.set(qn('r:id'), r_id)
+    
+    # Create a new run object
+    new_run = OxmlElement('w:r')
+    rPr = OxmlElement('w:rPr')
+    
+    # Add styling for hyperlink (blue and underlined)
+    color = OxmlElement('w:color')
+    color.set(qn('w:val'), '0000FF')
+    rPr.append(color)
+    
+    u = OxmlElement('w:u')
+    u.set(qn('w:val'), 'single')
+    rPr.append(u)
+    
+    new_run.append(rPr)
+    new_run.text = text
+    hyperlink.append(new_run)
+    
+    paragraph._p.append(hyperlink)
+    
+    return hyperlink
+
+
+def add_paragraph_with_citations(doc, text, references):
+    """Add a paragraph to Word doc with hyperlinked citations."""
+    p = doc.add_paragraph()
+    
+    # Split text by citation pattern [1], [2], etc.
+    parts = re.split(r'(\[\d+\])', text)
+    
+    for part in parts:
+        if not part:
+            continue
+        
+        # Check if this is a citation
+        cite_match = re.match(r'\[(\d+)\]', part)
+        if cite_match:
+            ref_num = cite_match.group(1)
+            if ref_num in references:
+                # Add actual hyperlinked citation
+                try:
+                    add_hyperlink(p, part, references[ref_num])
+                except Exception as e:
+                    # Fallback to styled text if hyperlink fails
+                    run = p.add_run(part)
+                    run.font.color.rgb = RGBColor(0, 0, 255)
+                    run.font.underline = True
+            else:
+                # Add regular citation
+                p.add_run(part)
+        else:
+            # Regular text
+            p.add_run(part)
+    
+    return p
+
+
 @app.post("/api/download")
 async def download_response(request: Request):
     """
@@ -544,6 +643,9 @@ async def download_response(request: Request):
         
         # Clean markdown syntax for better formatting
         cleaned_text = response_text
+        
+        # Extract references for hyperlinking
+        references = extract_references(cleaned_text)
         
         # Generate timestamp for filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -569,27 +671,36 @@ async def download_response(request: Request):
             
             # Process text - handle markdown headings and citations
             lines = cleaned_text.split('\n')
+            in_references_section = False
+            
             for line in lines:
-                line = line.strip()
-                if not line:
+                line_stripped = line.strip()
+                if not line_stripped:
                     doc.add_paragraph()
                     continue
                 
+                # Check if we're entering references section
+                if re.match(r'^#+\s*(References?|Sources?|Citations?)\s*$', line_stripped, re.IGNORECASE):
+                    in_references_section = True
+                
                 # Handle markdown headings
-                if line.startswith('### '):
-                    doc.add_heading(line[4:], level=3)
-                elif line.startswith('## '):
-                    doc.add_heading(line[3:], level=2)
-                elif line.startswith('# '):
-                    doc.add_heading(line[2:], level=1)
-                elif line.startswith('**') and line.endswith('**'):
+                if line_stripped.startswith('### '):
+                    doc.add_heading(line_stripped[4:], level=3)
+                elif line_stripped.startswith('## '):
+                    doc.add_heading(line_stripped[3:], level=2)
+                elif line_stripped.startswith('# '):
+                    doc.add_heading(line_stripped[2:], level=1)
+                elif line_stripped.startswith('**') and line_stripped.endswith('**'):
                     # Bold text
                     p = doc.add_paragraph()
-                    run = p.add_run(line[2:-2])
+                    run = p.add_run(line_stripped[2:-2])
                     run.bold = True
                 else:
-                    # Regular paragraph
-                    doc.add_paragraph(line)
+                    # Regular paragraph - check for citations
+                    if references and re.search(r'\[\d+\]', line_stripped):
+                        add_paragraph_with_citations(doc, line_stripped, references)
+                    else:
+                        doc.add_paragraph(line_stripped)
             
             # Save to bytes buffer
             buffer = io.BytesIO()
@@ -633,13 +744,13 @@ async def download_response(request: Request):
             # Process text
             lines = cleaned_text.split('\n')
             for line in lines:
-                line = line.strip()
-                if not line:
+                line_stripped = line.strip()
+                if not line_stripped:
                     pdf.ln(5)
                     continue
                 
                 # Clean line for PDF - handle unicode early
-                line_clean = line.encode('latin-1', 'ignore').decode('latin-1')
+                line_clean = line_stripped.encode('latin-1', 'ignore').decode('latin-1')
                 
                 # Handle markdown headings
                 if line_clean.startswith('### '):
@@ -659,13 +770,48 @@ async def download_response(request: Request):
                     pdf.ln(4)
                     pdf.set_font("Arial", "", 11)
                 else:
-                    # Regular text - remove markdown bold syntax
+                    # Regular text - handle citations with hyperlinks
                     line_clean = line_clean.replace('**', '')
                     pdf.set_font("Arial", "", 11)
+                    
                     try:
-                        pdf.multi_cell(0, 6, line_clean)
+                        # Check if line contains citations
+                        if references and re.search(r'\[\d+\]', line_clean):
+                            # Split line by citations and add with links
+                            parts = re.split(r'(\[\d+\])', line_clean)
+                            x_start = pdf.get_x()
+                            y_start = pdf.get_y()
+                            
+                            for part in parts:
+                                if not part:
+                                    continue
+                                
+                                cite_match = re.match(r'\[(\d+)\]', part)
+                                if cite_match:
+                                    ref_num = cite_match.group(1)
+                                    if ref_num in references:
+                                        # Add clickable citation link
+                                        pdf.set_text_color(0, 0, 255)
+                                        pdf.set_font("Arial", "U", 11)  # Underlined
+                                        pdf.write(6, part, references[ref_num])
+                                        pdf.set_text_color(0, 0, 0)
+                                        pdf.set_font("Arial", "", 11)
+                                    else:
+                                        pdf.write(6, part)
+                                else:
+                                    pdf.write(6, part)
+                            
+                            pdf.ln()
+                        else:
+                            # No citations, just add the line
+                            pdf.multi_cell(0, 6, line_clean)
                     except Exception as e:
                         logger.warning(f"[/api/download] Skipped line: {str(e)[:50]}")
+                        # Fallback to simple multi_cell
+                        try:
+                            pdf.multi_cell(0, 6, line_clean)
+                        except:
+                            pass
             
             # Save to bytes buffer - fpdf2's output(dest='S') returns bytes directly
             buffer = io.BytesIO()

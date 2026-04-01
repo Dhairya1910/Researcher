@@ -2152,6 +2152,9 @@
         bubble.innerHTML = renderMarkdownWithLatex(fullText);
         scrollEnd();
 
+        // Store original markdown text for download
+        bubble.dataset.originalText = fullText;
+
         // Store in message history
         state.messages.push({ role: "assistant", content: fullText });
 
@@ -2202,6 +2205,9 @@
 
         const bubble = document.getElementById(bubbleId);
         
+        // Store original markdown text in data attribute for download
+        bubble.dataset.originalText = text;
+        
         // Instant display for reliability - users prefer speed over animation
         bubble.innerHTML = renderMarkdownWithLatex(text);
         scrollEnd();
@@ -2215,8 +2221,8 @@
           return;
         }
 
-        // Get the text content from the bubble
-        const responseText = bubble.innerText || bubble.textContent;
+        // Get the original markdown text from data attribute, fallback to text content
+        const responseText = bubble.dataset.originalText || bubble.innerText || bubble.textContent;
         
         if (!responseText.trim()) {
           showToast("Error: No content to download");
@@ -2312,6 +2318,9 @@
         // Final render without cursor
         bubble.innerHTML = renderMarkdownWithLatex(text);
         scrollEnd();
+        
+        // Store original markdown text for download
+        bubble.dataset.originalText = text;
       }
 
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
