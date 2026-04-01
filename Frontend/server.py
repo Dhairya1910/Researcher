@@ -671,7 +671,7 @@ async def download_response(request: Request):
             buffer = io.BytesIO()
             pdf_bytes = pdf.output(dest='S')
             # Handle both old and new fpdf2 versions
-            if isinstance(pdf_bytes, bytes):
+            if isinstance(pdf_bytes, (bytes, bytearray)):
                 buffer.write(pdf_bytes)
             else:
                 # Older versions might return str
